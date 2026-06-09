@@ -1,0 +1,8 @@
+interface:
+  display_name: "Study Review"
+  short_description: "Exam review with active recall and spaced repetition"
+  brand_color: "#2563EB"
+  default_prompt: "Use $study-review to start an active-recall exam review session from my local course materials."
+
+policy:
+  allow_implicit_invocation: true
