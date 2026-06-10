@@ -464,15 +464,12 @@ README 只写：
 2. 在 `SKILL.md` 中引用 question patterns。
 3. 写 `references/data_formats.md`。
 4. 写 `examples/sample_progress.md` 和 `examples/sample_cards.yaml`。
-5. 写 `references/past_exam_analysis.md`。
-6. 写 `references/product_mvp.md`。
-7. 写 `scripts/init_course_review.py`。
-8. 写 `scripts/analyze_exam.py`。
-9. 升级 `review_log.py`，支持课程 review 目录和 cards.yaml。
-10. 升级 `due_today.py`，支持 workspace 扫描。
-11. 用 `计算机网络` 跑端到端。
-12. 补 README。
-13. 补最小测试。
+5. 写 `scripts/init_course_review.py`。
+6. 写 `scripts/analyze_exam.py`。
+7. 升级 `review_log.py`，支持课程 review 目录和 cards.yaml。
+8. 升级 `due_today.py`，支持 workspace 扫描。
+9. 用 `计算机网络` 跑端到端。
+10. 补最小测试。
 
 ## 第一版完成定义
 

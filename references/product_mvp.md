@@ -21,6 +21,7 @@ Core promise:
 ## MVP Marker Legend
 
 - `[MVP]`: required for the first useful version.
+- `[MVP-CANDIDATE]`: likely to enter the first useful version, but should be validated after data formats and CLI flow work.
 - `[PAID]`: strong paid-entry candidate.
 - `[LATER]`: useful after the core loop works.
 - `[RISK]`: valuable but easy to make low quality; implement with guardrails.

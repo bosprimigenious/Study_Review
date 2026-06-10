@@ -570,7 +570,7 @@ Agent 生成重点、变式题和计划
 目标：
 
 - 完成 `PLAN.md` 中 P0。
-- 补 `product_mvp.md`，标记 `[MVP]`、`[PAID]`、`[LATER]`、`[RISK]`、`[DO NOT START]`。
+- 保持 `SKILL.md` 精简，并把产品、试卷分析、总控细节分别放在 `product_mvp.md`、`past_exam_analysis.md`、`orchestrator.md`。
 - 补 `question_patterns.md`。
 - 补 `data_formats.md`。
 - 做 `init_course_review.py`。
