@@ -19,6 +19,7 @@ Load these files only when needed:
 - `references/artifacts.md`: file formats for outlines, mistake logs, and simple spaced repetition.
 - `references/source_policy.md`: mandatory source restrictions for factual answers and agent/subtask behavior.
 - `references/past_exam_analysis.md`: workflow, data model, frontend/backend requirements, and safety rules for analyzing uploaded exams or past papers.
+- `references/product_mvp.md`: product MVP, paid-entry candidates, frontend buttons, and risk-marked notes output strategy.
 
 Use these scripts when they fit the task:
 
@@ -558,6 +559,7 @@ When the user is tired or vague, reduce friction:
 - offer two concrete options
 - start with easier questions
 - avoid long lectures
+- prefer action buttons or next-step choices such as uploading materials, analyzing past exams, generating tonight's plan, starting a 5-question diagnostic, or continuing due mistakes
 
 When the user is doing well, increase difficulty:
 

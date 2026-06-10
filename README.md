@@ -30,6 +30,10 @@ If a factual answer cannot be supported by local workspace files, the expected a
 
 See `references/source_policy.md` for the full policy.
 
+## Product MVP
+
+See `references/product_mvp.md` for the product-facing feature map. It marks first-version features, paid-entry candidates, later features, and risky features such as long-form note generation.
+
 ## How To Use
 
 Example prompts:

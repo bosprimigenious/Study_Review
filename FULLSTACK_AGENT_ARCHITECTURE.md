@@ -567,6 +567,7 @@ Agent 生成重点、变式题和计划
 目标：
 
 - 完成 `PLAN.md` 中 P0。
+- 补 `product_mvp.md`，标记 `[MVP]`、`[PAID]`、`[LATER]`、`[RISK]`、`[DO NOT START]`。
 - 补 `question_patterns.md`。
 - 补 `data_formats.md`。
 - 做 `init_course_review.py`。
@@ -714,14 +715,16 @@ SQLite
 
 顺序：
 
-1. 补 `references/question_patterns.md`。
-2. 补 `references/data_formats.md`。
-3. 补 `examples/sample_progress.md` 和 `examples/sample_cards.yaml`。
-4. 写 `scripts/init_course_review.py`。
-5. 升级 `review_log.py` 和 `due_today.py`。
-6. 用 `计算机网络` 跑通 CLI 闭环。
-7. 再开 FastAPI。
-8. 最后开 React + TS。
+1. 补 `references/product_mvp.md`。
+2. 补 `references/question_patterns.md`。
+3. 补 `references/data_formats.md`。
+4. 补 `examples/sample_progress.md` 和 `examples/sample_cards.yaml`。
+5. 写 `scripts/init_course_review.py`。
+6. 写 `scripts/analyze_exam.py`。
+7. 升级 `review_log.py` 和 `due_today.py`。
+8. 用 `计算机网络` 跑通 CLI 闭环。
+9. 再开 FastAPI。
+10. 最后开 React + TS。
 
 原因：
 

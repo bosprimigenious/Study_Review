@@ -43,6 +43,7 @@ study-review-skill/
 
 当前真正急缺的部分：
 
+- 缺少明确的产品 MVP 文档，把“资料上传、查找重点、复习规划、付费入口、笔记风险”统一标记。
 - 缺少“怎么问好问题”的模板库。
 - 缺少稳定的课程 `review/` 目录标准。
 - 缺少可恢复的进度文件。
@@ -73,6 +74,9 @@ study-review-skill/
 
 6. **试卷重点分析模块**
    用户上传试卷、往年题、样题或作业答案后，系统要能识别题型和考点，匹配本地复习资料章节，输出高频重点，生成模拟题/变式题，并形成短期复习计划。
+
+7. **产品 MVP 标记**
+   用 `[MVP]`、`[PAID]`、`[LATER]`、`[RISK]`、`[DO NOT START]` 标记功能边界，避免第一版被长笔记、复杂导出、多人分享等功能拖散。
 
 ### P1：必要但不抢第一批
 
@@ -283,6 +287,7 @@ scripts/due_today.py
 
 ```text
 references/past_exam_analysis.md
+references/product_mvp.md
 scripts/analyze_exam.py
 ```
 
@@ -458,13 +463,14 @@ README 只写：
 3. 写 `references/data_formats.md`。
 4. 写 `examples/sample_progress.md` 和 `examples/sample_cards.yaml`。
 5. 写 `references/past_exam_analysis.md`。
-6. 写 `scripts/init_course_review.py`。
-7. 写 `scripts/analyze_exam.py`。
-8. 升级 `review_log.py`，支持课程 review 目录和 cards.yaml。
-9. 升级 `due_today.py`，支持 workspace 扫描。
-10. 用 `计算机网络` 跑端到端。
-11. 补 README。
-12. 补最小测试。
+6. 写 `references/product_mvp.md`。
+7. 写 `scripts/init_course_review.py`。
+8. 写 `scripts/analyze_exam.py`。
+9. 升级 `review_log.py`，支持课程 review 目录和 cards.yaml。
+10. 升级 `due_today.py`，支持 workspace 扫描。
+11. 用 `计算机网络` 跑端到端。
+12. 补 README。
+13. 补最小测试。
 
 ## 第一版完成定义
 
