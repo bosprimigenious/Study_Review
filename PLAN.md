@@ -1,8 +1,9 @@
 # Study Review Skill 开发计划
 
 制定时间：2026-06-09  
-版本：v2，按真实复习有效性重新排序  
-依据：当前仓库、`DESIGN.md`、`RESEARCH_REPORT.md`、对标项目，以及当前 workspace 里的实际课程资料。
+最近更新：2026-06-10  
+版本：v3，按大学生期末需求和可执行闭环重新排序  
+依据：当前仓库、`DESIGN.md`、`RESEARCH_REPORT.md`、`references/student_needs_research.md`、`references/product_mvp.md`、对标项目，以及当前 workspace 里的实际课程资料。
 
 ## 一句话判断
 
@@ -10,7 +11,11 @@
 
 > 先问问题，发现薄弱点，记录错因，隔天再抽查。
 
-因此第一版必须优先开发“复习闭环”，而不是先做复杂导出、FSRS、Web 面板或完美 PPT/PDF 解析。
+因此第一版必须优先开发“资料到行动”的复习闭环，而不是先做复杂导出、FSRS、Web 面板或完美 PPT/PDF 解析。
+
+用户最强需求可以压成一句话：
+
+> 我有一堆 PPT、往年题、作业答案和老师重点，但快考试了，请告诉我先复习什么，按考法出题，一题一题带我做，并把错题安排到考前复查。
 
 ## 当前仓库状态
 
@@ -43,15 +48,40 @@ study-review-skill/
 - `references/product_mvp.md` 已统一标记 MVP、付费入口、后续功能和笔记风险。
 - `references/past_exam_analysis.md` 已定义试卷/往年题分析模块。
 - `references/question_patterns.md` 和 `references/data_formats.md` 已补齐第一版问题模板与数据契约。
+- `examples/sample_files.yaml`、`sample_progress.md`、`sample_cards.yaml`、`sample_exam_analysis.yaml` 已提供样例数据。
+- `scripts/init_course_review.py` 已实现课程 `review/` 工作区初始化，并验证不会覆盖已有文件。
 - 五门课的复习策略已经分开。
 - 文件夹扫描、错题记录、到期查看都有最小脚本。
 - 对标分析已经说明：成熟复习系统都绕不开题卡、日志、调度。
 
 当前真正急缺的部分：
 
-- 缺少可执行的课程 `review/` 初始化脚本。
+- `scripts/analyze_exam.py` 还没有实现。
+- `scripts/generate_questions.py` 还没有实现。
+- `scripts/plan_review.py` 还没有实现。
 - 错题记录和到期复习还没有形成闭环。
 - 没有用真实科目跑过端到端验证。
+
+## 需求到功能映射
+
+调研后，功能必须围绕期末周高压场景排序。
+
+| 学生需求 | 产品功能 | 工程落点 | 优先级 |
+| --- | --- | --- | --- |
+| 来不及了，不知道先看什么 | 今晚/三天救火计划 | `plan_review.py`, `plan.md` | P0 |
+| 资料太多，不知道重点 | 资料分类和重点查找 | `files.yaml`, `data_formats.md`, later material index | P0 |
+| 有往年题，想知道高频题型 | 试卷/往年题分析 | `analyze_exam.py`, `exam-analysis.yaml` | P0 |
+| 想按考法练题 | 变式题生成 | `generate_questions.py`, `generated-questions.yaml` | P0 |
+| 看 PPT 感觉会，答题写不出 | 一题一答抽查 | `question_patterns.md`, future review session | P0 |
+| 错了容易忘 | 错题记录和到期复查 | `review_log.py`, `due_today.py`, `cards.yaml` | P0 |
+| 想要速成笔记 | 今晚保底笔记/错题笔记 | after analysis and plan are stable | P1 |
+| 想导出/分享 | PDF/Word/Anki/分享 | later | P2 |
+
+第一版不追求“全科完整笔记”，只追求：
+
+```text
+资料 -> 重点 -> 题 -> 计划 -> 答题 -> 错题 -> 复查
+```
 
 ## 功能优先级
 
@@ -59,25 +89,25 @@ study-review-skill/
 
 这些功能直接决定它是不是一个好用的复习 skill。
 
-1. **提问模板库**
-   没有好问题，复习就会退化成总结。要优先沉淀诊断题、概念辨析题、公式条件题、协议流程题、计算题、简答题、追问题。
+1. **提问模板库** `已完成文档，待接入工具`
+   没有好问题，复习就会退化成总结。已沉淀诊断题、概念辨析题、公式条件题、协议流程题、计算题、简答题、追问题；下一步要让出题脚本实际使用它。
 
-2. **课程 review 目录**
-   每门课必须有自己的复习状态区，例如 `计算机网络/review/`。否则每次复习都会从零开始。
+2. **课程 review 目录** `脚本已完成，待真实课程落地`
+   每门课必须有自己的复习状态区，例如 `计算机网络/review/`。`init_course_review.py` 已可生成标准目录和文件；下一步是对真实课程运行并检查产物。
 
-3. **进度文件**
-   需要知道“上次复习到哪、最弱点是什么、下一步问什么”。这比一开始做 Anki 导出更重要。
+3. **进度文件** `格式已定义，待自动更新`
+   需要知道“上次复习到哪、最弱点是什么、下一步问什么”。`progress.md` 格式已定义；后续脚本需要自动更新它。
 
-4. **错题到复查闭环**
+4. **错题到复查闭环** `待实现`
    答错后要能写入错题，再由 `due_today.py` 在未来某天抽回来。
 
-5. **真实课程端到端测试**
+5. **真实课程端到端测试** `待执行`
    必须用 `计算机网络` 或 `概率论与数理统计` 跑一次完整流程。纸面计划不等于好用。
 
-6. **试卷重点分析模块**
+6. **试卷重点分析模块** `文档已完成，脚本待实现`
    用户上传试卷、往年题、样题或作业答案后，系统要能识别题型和考点，匹配本地复习资料章节，输出高频重点，生成模拟题/变式题，并形成短期复习计划。
 
-7. **总控智能体契约**
+7. **总控智能体契约** `已完成文档，待接入后端`
    `SKILL.md` 保持精简，`references/orchestrator.md` 承接状态机、意图路由、工具输入输出和失败处理。
 
 ### P1：必要但不抢第一批
@@ -118,11 +148,11 @@ study-review-skill/
 5. **完整 study pack 生成器**
    `outline + glossary + quiz + flashcards + exercises` 很完整，但第一版先别追求一键生成所有材料。
 
-## 第一阶段：把“问得好”做出来
+## 第一阶段：把“问得好”做出来 `已完成文档`
 
 目标：Codex 触发 skill 后，能稳定用高质量问题带你复习。
 
-新增：
+已新增：
 
 ```text
 references/question_patterns.md
@@ -142,26 +172,28 @@ references/question_patterns.md
 
 验收标准：
 
-- 每类至少 3 个模板。
-- 每门当前课程至少有 5 个可直接套用的模板。
-- `SKILL.md` 的 Bundled Resources 引用它。
-- 用 `计算机网络` 能生成一组 5 题诊断题。
+- 每类至少 3 个模板。`已完成`
+- 每门当前课程至少有 5 个可直接套用的模板。`已完成`
+- `SKILL.md` 的 Bundled Resources 引用它。`已完成`
+- 用 `计算机网络` 能生成一组 5 题诊断题。`待工具化验证`
 
 为什么急：
 
 - 这是整个 skill 的“教学质量核心”。
 - 没它，Codex 容易回到普通总结模式。
 
-## 第二阶段：定义课程 review 工作区
+## 第二阶段：定义课程 review 工作区 `基础已完成，待真实课程运行`
 
 目标：每门课有稳定的复习状态，不再每次从零开始。
 
-新增：
+已新增：
 
 ```text
 references/data_formats.md
 examples/sample_progress.md
 examples/sample_cards.yaml
+examples/sample_files.yaml
+examples/sample_exam_analysis.yaml
 scripts/init_course_review.py
 ```
 
@@ -173,7 +205,12 @@ scripts/init_course_review.py
 └── review/
     ├── progress.md
     ├── mistake-log.md
-    └── cards.yaml
+    ├── cards.yaml
+    ├── files.yaml
+    ├── exam-analysis.yaml
+    ├── past-exam-patterns.yaml
+    ├── generated-questions.yaml
+    └── plan.md
 ```
 
 `progress.md` 保存：
@@ -211,16 +248,18 @@ scripts/init_course_review.py
 
 验收标准：
 
-- 对 `计算机网络` 跑一次，生成完整 `review/`。
-- 生成的 `cards.yaml` 可被 Python 标准库或轻量 YAML 解析器读取。
-- 生成的 `progress.md` 人能直接看懂下一步。
+- `--dry-run` 对 `计算机网络` 能识别资料并显示将创建的文件。`已完成`
+- 对临时课程目录实际运行，生成完整 `review/`。`已完成`
+- 重复运行不覆盖已有文件。`已完成`
+- 对真实 `计算机网络` 目录实际初始化并人工检查产物。`待执行`
+- 生成的 `progress.md` 人能直接看懂下一步。`已完成样例，待真实课程确认`
 
 为什么急：
 
 - 没有 review 工作区，就没有长期记忆。
 - 这是从“一次聊天”变成“复习系统”的边界。
 
-## 第三阶段：打通错题到复查
+## 第三阶段：打通错题到复查 `下一批实现`
 
 目标：用户答错一次，未来能被系统重新抽回来。
 
@@ -285,7 +324,7 @@ scripts/due_today.py
 
 目标：把“上传试卷/往年题 -> 找重点 -> 出变式题 -> 给计划”做成正式功能，而不是靠临时提示词。
 
-新增：
+已新增文档，待新增脚本：
 
 ```text
 references/past_exam_analysis.md
@@ -341,11 +380,11 @@ course/review/
 
 验收标准：
 
-- 能对一门课识别至少 3 类题型或考点。
-- 每个高频重点都能回到本地资料或试卷文件。
-- 能生成至少 5 道标注为 `模拟题` 或 `变式题` 的练习题。
-- 每题包含标准答案、评分点、来源依据和建议限时。
-- 输出 30 分钟、90 分钟、3 天三种复习计划。
+- 能对一门课识别至少 3 类题型或考点。`待实现`
+- 每个高频重点都能回到本地资料或试卷文件。`待实现`
+- 能生成至少 5 道标注为 `模拟题` 或 `变式题` 的练习题。`待实现`
+- 每题包含标准答案、评分点、来源依据和建议限时。`待实现`
+- 输出 30 分钟、90 分钟、3 天三种复习计划。`待实现`
 - 不承诺押题，不生成或索要泄题内容。
 
 为什么急：
@@ -504,3 +543,116 @@ scripts/plan_review.py
 
 - 数据契约和问题模板已经补齐。
 - 下一步应该让一门真实课程能生成 `review/` 工作区，并进入试卷分析、出题、规划的 CLI 闭环。
+
+## 下一轮开发 Sprint
+
+目标：把“大学生期末需求调研”真正变成能跑的 CLI 链路。
+
+### Sprint A：真实课程初始化
+
+任务：
+
+1. 对 `../计算机网络` 运行 `scripts/init_course_review.py`。
+2. 检查 `计算机网络/review/files.yaml` 的文件分类是否合理。
+3. 检查 `progress.md` 是否能指导下一步。
+4. 如果分类不准，改进 `guess_material_type()`。
+
+验收：
+
+- `计算机网络/review/` 下 8 个标准文件存在。
+- 原始课件目录不被移动、不被覆盖。
+- 重复运行 `init_course_review.py` 时全部跳过已有文件。
+
+### Sprint B：试卷分析脚本雏形
+
+新增：
+
+```text
+scripts/analyze_exam.py
+```
+
+第一版不要追求完美 PDF/PPT 解析，先做确定性能力：
+
+- 读取 `review/files.yaml`。
+- 找出 `past_exam`、`mock_exam`、`homework_answer`、`teacher_focus`。
+- 根据文件类型和文件名生成初始优先级。
+- 输出 `review/exam-analysis.yaml`。
+- 输出 `review/past-exam-patterns.yaml` 的空壳或基础 pattern。
+
+验收：
+
+- 对 `计算机网络/review/files.yaml` 能生成非空 `exam-analysis.yaml`。
+- 分析结果明确标注 evidence。
+- 低置信度时不装作精准分析。
+
+### Sprint C：变式题生成雏形
+
+新增：
+
+```text
+scripts/generate_questions.py
+```
+
+第一版能力：
+
+- 读取 `past-exam-patterns.yaml` 或 `exam-analysis.yaml`。
+- 使用 `references/question_patterns.md` 中的题型模板。
+- 生成 5 道 `模拟题` 或 `变式题`。
+- 写入 `generated-questions.yaml`。
+- 每题包含：题目、依据、评分点、建议限时。
+
+验收：
+
+- 生成题不声称押题。
+- 每题能追溯到 pattern 或 priority。
+- 题目格式能被后续 review session 使用。
+
+### Sprint D：今晚计划脚本
+
+新增：
+
+```text
+scripts/plan_review.py
+```
+
+第一版能力：
+
+- 读取 `progress.md`、`exam-analysis.yaml`、`cards.yaml`。
+- 支持 `--minutes 30/90` 和 `--days 3/7`。
+- 输出 `plan.md`。
+- 计划末尾给出“现在开始”的第一步。
+
+验收：
+
+- 对 `计算机网络` 能生成 90 分钟保底计划。
+- 计划引用本地资料或分析结果。
+- 计划不是泛泛建议，而是可执行任务列表。
+
+### Sprint E：错题闭环升级
+
+升级：
+
+```text
+scripts/review_log.py
+scripts/due_today.py
+```
+
+能力：
+
+- `review_log.py` 写入 `COURSE/review/mistake-log.md`。
+- 同步追加 `cards.yaml`。
+- `due_today.py` 扫描 workspace 下所有 `*/review/cards.yaml` 和 `mistake-log.md`。
+- 支持 `--json`。
+
+验收：
+
+- 记录 1 条错题后，当天或次日能被 `due_today.py` 查到。
+- 坏 YAML 不导致整个扫描崩溃。
+
+## 开发顺序原则
+
+1. 先 CLI，后 API，最后前端。
+2. 先确定性脚本，后 agent 自由生成。
+3. 先跑通一门课，后抽象成多课程。
+4. 先保底计划和变式题，后完整笔记。
+5. 每个脚本都必须重复运行安全，不覆盖用户资料。
