@@ -756,14 +756,233 @@ SQLite
 
 不要一开始上 PostgreSQL。
 
-## 暂不做
+## 暂不做（v0.2–v1.0）
 
 - 不先做移动 App。
 - 不先做复杂多人系统。
-- 不先做 OAuth/账号系统。
-- 不先做 Web 面板统计图。
+- 不先做 OAuth/账号系统（v1.5 再做，见 § SaaS）。
+- 不先做运营统计大盘。
 - 不先做 FSRS。
-- 不先强制迁移数据库。
+- 不先强制迁移 PostgreSQL（v1.5 前可用 SQLite）。
+
+---
+
+## SaaS 架构（v1.5–v2.0）
+
+产品定义见 `PRODUCT_ARCHITECTURE.md`。本节只写技术落地，不写定价策略与页面文案。
+
+### 总体拓扑
+
+```text
+Browser (Next.js / React)
+  ↓ HTTPS
+API Gateway / CDN
+  ↓
+FastAPI (services/api)
+  ├── Auth Service
+  ├── Billing Service
+  ├── Course & Material Service
+  ├── Review State Service
+  ├── Agent Orchestrator
+  └── Job Queue (材料解析)
+  ↓
+PostgreSQL（v1.5+）+ Object Storage（S3/R2/本地 MinIO）
+  ↓
+LLM Provider（OpenAI 等）
+```
+
+### 多租户模型
+
+```text
+User
+  └── Workspace（v1.5 默认 1 user = 1 workspace）
+        ├── Subscription
+        ├── Courses[]
+        │     ├── Materials[]
+        │     └── ReviewState（原 review/ 目录语义）
+        └── UsageQuota
+```
+
+v2.0 可扩展 `WorkspaceMember`（校园管理员、助教）。
+
+Review 状态迁移路径：
+
+```text
+Phase 1: Markdown + YAML（本地 review/）
+Phase 2: SQLite（单用户 API）
+Phase 3: PostgreSQL JSONB + 对象存储路径（SaaS）
+```
+
+### 认证（Auth）
+
+| 组件 | 建议 |
+|------|------|
+| v1.5 注册 | 邮箱 + 密码，bcrypt/argon2 |
+| Session | JWT access（15min）+ httpOnly refresh（7d） |
+| OAuth | 微信/Google 作为 v1.5 P1；校园 SSO v2.0 |
+| 前端 | Next.js middleware 保护 `/app/*` |
+
+API 约定：
+
+```text
+POST /auth/register
+POST /auth/login
+POST /auth/refresh
+POST /auth/logout
+GET  /auth/me
+```
+
+### 支付（Billing）
+
+| 组件 | 建议 |
+|------|------|
+| 国内 | 微信支付 / 支付宝（Native 或 JSAPI） |
+| 海外 | Stripe Checkout + Customer Portal |
+| Webhook | `POST /billing/webhook/{provider}` 更新 subscription 状态 |
+| 状态机 | `trialing → active → past_due → canceled` |
+
+```text
+POST /billing/checkout        # 创建支付会话
+GET  /billing/subscription    # 当前订阅
+GET  /billing/usage           # 免费额度消耗
+POST /billing/webhook/stripe
+POST /billing/webhook/wechat
+```
+
+配额 enforcement 在 API middleware：分析/计划/生成题前检查 `UsageQuota`。
+
+### 前后端通信
+
+| 场景 | 协议 |
+|------|------|
+| CRUD（课程、资料、错题） | REST JSON |
+| 对话流式输出 | SSE `GET /agent/stream` 或 `POST` + `text/event-stream` |
+| 练习判分 | REST `POST /review-session/answer`（v0.3 后可流式反馈） |
+| 文件上传 | `multipart/form-data` → 预签名 URL（大文件） |
+
+错误格式统一：
+
+```json
+{
+  "error": {
+    "code": "QUOTA_EXCEEDED",
+    "message": "本月试卷分析次数已用完",
+    "upgrade_url": "/app/settings/billing"
+  }
+}
+```
+
+### 对话通道与 Session 持久化
+
+v0.3 起 session 存 `review/session.yaml`；SaaS 迁移到 DB：
+
+```sql
+-- 示意，非最终 migration
+review_sessions (
+  id, workspace_id, course_id, source,
+  state_json, started_at, updated_at
+)
+```
+
+Agent 调用链（与 `orchestrator.md` 一致）：
+
+```text
+POST /agent/run
+  → StudyReviewOrchestrator
+  → intent classify
+  → tool_dispatcher（不调未实现工具）
+  → persist via Review State Service
+  → return { intent, nextAction, artifacts, message }
+```
+
+固定按钮**不走** `/agent/run`，走确定性 REST（降低幻觉风险）。
+
+### 文件存储与解析队列
+
+```text
+上传 → Object Storage（materials/{workspace}/{course}/{file_id}）
+     → DB material_files 记录元数据
+     → Celery/RQ job：indexing
+     → status: ready | failed
+```
+
+v1.0 可同步解析文件名；v1.5 引入队列处理 PDF 轻量文本。
+
+### PostgreSQL 核心表（v1.5 示意）
+
+```text
+users
+workspaces
+workspace_members          -- v2.0
+subscriptions
+usage_quotas
+courses
+material_files
+exam_analyses
+generated_questions
+cards
+mistakes
+review_sessions
+agent_runs                 -- 观测，可选
+```
+
+`cards` / `mistakes` 字段对齐 `references/data_formats.md`，避免前后端两套 schema。
+
+### Agent 服务边界
+
+| 走 Agent | 走固定 API |
+|----------|------------|
+| 「今晚怎么不挂」 | 点击「分析往年题」 |
+| 「按样题出 5 道变式」 | `POST /exam-analysis` |
+| 「这题答得对吗」 | `POST /review-session/answer` |
+| 自由追问 | 点击「生成今晚计划」 |
+
+LLM 职责：分类、判分、解释、出题、追问。  
+Python 职责：配额、持久化、文件 IO、调度 due。
+
+### 观测与计费
+
+| 指标 | 用途 |
+|------|------|
+| `agent_runs` 日志 | intent、tools_called、latency |
+| Token 计量 | 按 workspace 月度配额；付费解锁 |
+| 业务漏斗 | 上传→分析→计划→练习→付费（v2.0 运营后台） |
+
+### 部署（v2.0 目标）
+
+```text
+Frontend: Vercel / 静态 CDN
+API: Docker + Fly.io / 云主机
+DB: PostgreSQL managed
+Storage: S3 / Cloudflare R2
+Queue: Redis + RQ/Celery
+```
+
+v1.0 可单机 Docker Compose（API + SQLite + 本地卷）。
+
+### SaaS 与现有 Skill 仓库关系
+
+```text
+skill/（本仓库 SKILL.md + references/）
+  = Agent 行为源（prompt 层）
+
+services/api/
+  = 运行时（读 skill 文本组装 prompt）
+
+apps/web/
+  = 产品壳（PRODUCT_ARCHITECTURE.md 页面地图）
+```
+
+Skill 仓库可 Submodule 或 monorepo `packages/skill`，版本与 API 一起发布。
+
+### SaaS 开发顺序
+
+1. v0.2 CLI 闭环稳定（数据契约不变）
+2. v0.4 FastAPI 封装 CLI（单用户 SQLite）
+3. v0.5 React 工具前端（无账号）
+4. v1.0 三课验证
+5. v1.5 Auth + Billing + Chat + PostgreSQL
+6. v2.0 多租户 + 校园 + 运营后台
 
 ## 与当前计划的衔接
 

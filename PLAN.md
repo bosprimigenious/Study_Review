@@ -2,8 +2,8 @@
 
 制定时间：2026-06-09  
 最近更新：2026-06-10  
-版本：v3，按大学生期末需求和可执行闭环重新排序  
-依据：当前仓库、`DESIGN.md`、`RESEARCH_REPORT.md`、`references/student_needs_research.md`、`references/product_mvp.md`、对标项目，以及当前 workspace 里的实际课程资料。
+版本：v3.1，新增商业化路线图索引；产品全景见 `PRODUCT_ARCHITECTURE.md`  
+依据：当前仓库、`DESIGN.md`、`PRODUCT_ARCHITECTURE.md`、`RESEARCH_REPORT.md`、`references/student_needs_research.md`、`references/product_mvp.md`、对标项目（含 NovaOrbit），以及当前 workspace 里的实际课程资料。
 
 ## 一句话判断
 
@@ -1071,6 +1071,30 @@ feat: connect mistake log to due review cards
 3. 先跑通一门课，后抽象成多课程。
 4. 先保底计划和变式题，后完整笔记。
 5. 每个脚本都必须重复运行安全，不覆盖用户资料。
+
+## 商业化路线图（顶层索引）
+
+详细产品定义见 `PRODUCT_ARCHITECTURE.md`；SaaS 技术方案见 `FULLSTACK_AGENT_ARCHITECTURE.md` § SaaS；任务预览见 `tasks.md` Phase 3–4。
+
+```text
+v0.2  CLI MVP 闭环     ← 当前焦点（55 任务）
+v0.3  Agent API
+v0.4  FastAPI 后端
+v0.5  React 工具前端   ← references/product_mvp.md 功能边界
+v1.0  可用期末复习产品（无账号，3 门课跑通）
+v1.5  商业化（账号、支付、对话、付费墙）
+v2.0  SaaS 上线（多租户、校园、运营后台）
+```
+
+| 版本 | 里程碑（3–5 条） | 启动条件 |
+|------|------------------|----------|
+| **v1.0** | ① Web 完成上传→分析→计划→练习→错题闭环 ② 3 门真实课程验证 ③ 打开到第一题 ≤2 分钟 ④ 用户无需 CLI | v0.5 页面可用 |
+| **v1.5** | ① 邮箱注册登录 ② 订阅支付打通 ③ 对话页 + 固定按钮双模式 ④ 免费层 + 冲刺包 SKU ⑤ 付费墙在分析/计划触发 | v1.0 验收通过 |
+| **v2.0** | ① 多租户 workspace ② 校园套餐/机构码 ③ 运营后台 ④ 生产监控与合规 ⑤ 99.5% 可用性目标 | v1.5 付费转化验证 |
+
+**现在不做**：v1.0 之前不接 OAuth/支付；`SKILL.md` 不写账号逻辑；商业化细节不写入 `references/product_mvp.md`。
+
+---
 
 ## 不变量
 
