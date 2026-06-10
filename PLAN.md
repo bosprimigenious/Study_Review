@@ -39,17 +39,17 @@ study-review-skill/
 - skill 的行为方向清楚：主动回忆优先。
 - `SKILL.md` 已蒸馏成总控智能体入口，细节拆到 `references/`。
 - `references/orchestrator.md` 已定义单总控 agent、状态机、意图路由和工具契约。
+- `references/student_needs_research.md` 已沉淀大学生期末需求和功能优先级。
 - `references/product_mvp.md` 已统一标记 MVP、付费入口、后续功能和笔记风险。
 - `references/past_exam_analysis.md` 已定义试卷/往年题分析模块。
+- `references/question_patterns.md` 和 `references/data_formats.md` 已补齐第一版问题模板与数据契约。
 - 五门课的复习策略已经分开。
 - 文件夹扫描、错题记录、到期查看都有最小脚本。
 - 对标分析已经说明：成熟复习系统都绕不开题卡、日志、调度。
 
 当前真正急缺的部分：
 
-- 缺少“怎么问好问题”的模板库。
-- 缺少稳定的课程 `review/` 目录标准。
-- 缺少可恢复的进度文件。
+- 缺少可执行的课程 `review/` 初始化脚本。
 - 错题记录和到期复习还没有形成闭环。
 - 没有用真实科目跑过端到端验证。
 
@@ -494,14 +494,13 @@ README 只写：
 马上做：
 
 ```text
-references/question_patterns.md
-references/data_formats.md
-examples/sample_progress.md
-examples/sample_cards.yaml
+scripts/init_course_review.py
+scripts/analyze_exam.py
+scripts/generate_questions.py
+scripts/plan_review.py
 ```
 
 理由：
 
-- 这些文件决定复习质量和数据边界。
-- 它们写好之后，再改脚本就不会边写边猜格式。
-- `SKILL.md` 已经蒸馏完成，下一步应该补齐可执行数据契约。
+- 数据契约和问题模板已经补齐。
+- 下一步应该让一门真实课程能生成 `review/` 工作区，并进入试卷分析、出题、规划的 CLI 闭环。

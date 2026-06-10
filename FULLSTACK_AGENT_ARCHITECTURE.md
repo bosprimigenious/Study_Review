@@ -571,8 +571,7 @@ Agent 生成重点、变式题和计划
 
 - 完成 `PLAN.md` 中 P0。
 - 保持 `SKILL.md` 精简，并把产品、试卷分析、总控细节分别放在 `product_mvp.md`、`past_exam_analysis.md`、`orchestrator.md`。
-- 补 `question_patterns.md`。
-- 补 `data_formats.md`。
+- 使用 `question_patterns.md` 和 `data_formats.md` 作为问题质量与数据契约。
 - 做 `init_course_review.py`。
 - 升级 `review_log.py` 和 `due_today.py`。
 
@@ -719,15 +718,14 @@ SQLite
 顺序：
 
 1. 保持 `SKILL.md` 精简，只做总控入口和行为规则。
-2. 补 `references/question_patterns.md`。
-3. 补 `references/data_formats.md`。
-4. 补 `examples/sample_progress.md` 和 `examples/sample_cards.yaml`。
-5. 写 `scripts/init_course_review.py`。
-6. 写 `scripts/analyze_exam.py`。
-7. 升级 `review_log.py` 和 `due_today.py`。
-8. 用 `计算机网络` 跑通 CLI 闭环。
-9. 再开 FastAPI。
-10. 最后开 React + TS。
+2. 写 `scripts/init_course_review.py`。
+3. 写 `scripts/analyze_exam.py`。
+4. 写 `scripts/generate_questions.py`。
+5. 写 `scripts/plan_review.py`。
+6. 升级 `review_log.py` 和 `due_today.py`。
+7. 用 `计算机网络` 跑通 CLI 闭环。
+8. 再开 FastAPI。
+9. 最后开 React + TS。
 
 原因：
 

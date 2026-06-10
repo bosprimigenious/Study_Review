@@ -1,0 +1,29 @@
+analysis:
+  id: exam-analysis-computer-network-001
+  course_id: computer-network
+  generated_at: "2026-06-10"
+  goal: pass
+  source_files:
+    - 计算机网络/计算机网络样题(5).pdf
+  summary: 传输层和网络层应优先复习；先练可得分题型，再补协议流程表达。
+  priorities:
+    - topic: TCP congestion control
+      chapter: Transport
+      weight: 5
+      question_types:
+        - short_answer
+      evidence:
+        - source_file: 计算机网络/计算机网络样题(5).pdf
+          reason: protocol explanation style
+      recommended_action: closed-book protocol flow recall
+  generated_questions:
+    - id: gen-computer-network-001
+      label: 变式题
+      topic: TCP fast retransmit and recovery
+      prompt: 请说明 TCP 快速重传和快速恢复的作用、触发条件和基本过程。
+      scoring_points:
+        - 说明作用
+        - 说明重复 ACK 触发
+        - 说明快速重传
+        - 说明快速恢复
+      time_limit_sec: 180

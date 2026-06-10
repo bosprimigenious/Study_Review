@@ -54,8 +54,11 @@ Load only the references needed for the current task:
 
 - `references/source_policy.md`: mandatory source restrictions and citation rules.
 - `references/orchestrator.md`: agent role, state machine, intent routing, tool contracts, and failure handling.
+- `references/student_needs_research.md`: student demand research and product implications.
 - `references/product_mvp.md`: MVP features, paid-entry candidates, notes strategy, and product guardrails.
 - `references/past_exam_analysis.md`: past-exam workflow, data model, frontend/backend requirements, and safety rules.
+- `references/question_patterns.md`: reusable templates for diagnostic, recall, contrast, calculation, proof, and past-exam variant questions.
+- `references/data_formats.md`: stable file contracts for review directories, cards, progress, exam analysis, and generated questions.
 - `references/modes.md`: detailed review modes and response shapes.
 - `references/subject_profiles.md`: subject-specific strategies for 毛概, 概率论, 计算机网络, 计算机组成原理, 理论计算机基础.
 - `references/card_quality.md`: rules for flashcards and active-recall questions.
@@ -64,6 +67,7 @@ Load only the references needed for the current task:
 Use scripts when they fit the task:
 
 - `scripts/inventory.py`: list likely study materials grouped by subject folder.
+- `scripts/init_course_review.py`: create a course `review/` workspace without overwriting existing files.
 - `scripts/review_log.py`: append a structured mistake entry.
 - `scripts/due_today.py`: list review items due today or earlier.
 

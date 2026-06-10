@@ -73,8 +73,11 @@ study-review-skill/
 - `FULLSTACK_AGENT_ARCHITECTURE.md`: React + TypeScript + Python architecture.
 - `RESEARCH_REPORT.md`: background research and external comparisons.
 - `references/orchestrator.md`: single-agent orchestration, state machine, intent routing, and tool contracts.
+- `references/student_needs_research.md`: student demand research for exam-week workflows.
 - `references/product_mvp.md`: MVP scope, paid-entry candidates, and note-generation strategy.
 - `references/past_exam_analysis.md`: past-exam analysis workflow and data model.
+- `references/question_patterns.md`: reusable question templates.
+- `references/data_formats.md`: stable review data contracts and examples.
 - `references/source_policy.md`: mandatory local-source policy.
 - `references/modes.md`: detailed review modes.
 - `references/subject_profiles.md`: subject-specific strategies.
@@ -96,3 +99,11 @@ upload exams/materials -> find priorities -> generate variants -> plan review ->
 ```
 
 More advanced features such as Anki export, FSRS scheduling, full PPT/PDF extraction, or a polished React interface should come after these review and exam-analysis loops work reliably.
+
+## First CLI Step
+
+Initialize a course review workspace:
+
+```bash
+python scripts/init_course_review.py "../计算机网络"
+```

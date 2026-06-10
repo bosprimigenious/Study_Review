@@ -1,0 +1,26 @@
+course:
+  id: computer-network
+  name: 计算机网络
+  created_at: "2026-06-10"
+
+files:
+  - id: file-computer-network-001
+    path: 计算机网络/计算机网络样题(5).pdf
+    name: 计算机网络样题(5).pdf
+    material_type: mock_exam
+    ext: .pdf
+    status: ready
+    tags:
+      - 样题
+      - 高频题型
+    notes: ""
+  - id: file-computer-network-002
+    path: 计算机网络/6-Transport(3).pptx
+    name: 6-Transport(3).pptx
+    material_type: slides
+    ext: .pptx
+    status: ready
+    tags:
+      - Transport
+      - TCP
+    notes: ""

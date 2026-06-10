@@ -1,0 +1,25 @@
+cards:
+  - id: card-computer-network-tcp-001
+    course_id: computer-network
+    subject: 计算机网络
+    chapter: Transport
+    topic: TCP congestion control
+    card_type: contrast
+    prompt: TCP 拥塞控制和流量控制的区别是什么？
+    answer: 拥塞控制面向网络整体负载；流量控制面向接收端处理能力。
+    scoring_points:
+      - 控制对象不同
+      - 使用窗口不同
+      - 触发原因不同
+    source:
+      file: 计算机网络/6-Transport(3).pptx
+      evidence: local course material
+    difficulty: medium
+    tags:
+      - 计算机网络
+      - TCP
+      - 易混
+    schedule:
+      rating: 困难
+      last_reviewed: "2026-06-10"
+      due: "2026-06-11"
