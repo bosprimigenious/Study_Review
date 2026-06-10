@@ -59,8 +59,42 @@ study-review-skill/
 - `scripts/analyze_exam.py` 还没有实现。
 - `scripts/generate_questions.py` 还没有实现。
 - `scripts/plan_review.py` 还没有实现。
+- `scripts/review_session.py` 还没有实现，一题一答还没有正式入口。
 - 错题记录和到期复习还没有形成闭环。
 - 没有用真实科目跑过端到端验证。
+
+## MVP 闭环审查结论
+
+结论：
+
+- **产品闭环成立**：已经明确从资料、往年题、计划、练题、错题到复查的完整路径。
+- **文档闭环基本成立**：`SKILL.md`、`references/orchestrator.md`、`references/product_mvp.md`、`references/data_formats.md` 已经能约束 agent 和脚本行为。
+- **执行闭环尚未完成**：目前只有初始化脚本可运行；试卷分析、变式题、计划、一题一答、错题复查还需要补齐。
+
+MVP 必须收束成这一条可运行链路：
+
+```text
+init_course_review
+  -> analyze_exam
+  -> generate_questions
+  -> plan_review
+  -> review_session
+  -> review_log
+  -> due_today
+```
+
+如果缺少 `review_session`，MVP 会停在“生成题和计划”，但不能证明用户真的被带着完成复习。因此一题一答会话必须进入 v0.2，而不是放到后面的前端阶段。
+
+MVP 可验收标准：
+
+- 一门真实课程能生成 `review/` 工作区。
+- 至少 1 份往年题/样题/老师重点能进入分析结果。
+- 至少生成 5 道带标准答案、评分点和来源依据的题。
+- 至少生成 1 份 90 分钟保底计划。
+- 用户能回答至少 1 道题，并得到 `correct | partial | wrong` 判定。
+- 至少 1 条错题能写入 `mistake-log.md` 和 `cards.yaml`。
+- `due_today.py` 能在当天或次日查回该错题。
+- 所有课程事实必须来自本地课程资料、分析文件或用户刚输入的答案。
 
 ## 版本路线图
 
@@ -97,6 +131,7 @@ inventory
   -> analyze_exam
   -> generate_questions
   -> plan_review
+  -> review_session
   -> review_log
   -> due_today
 ```
@@ -107,6 +142,7 @@ inventory
 - 能从样题/课件生成非空 `exam-analysis.yaml`。
 - 能生成 5 道变式题。
 - 能生成 90 分钟保底计划。
+- 能启动一题一答会话并判定用户答案。
 - 能记录 1 条错题并在 due 查询中出现。
 
 ### v0.3：Agent 编排闭环
@@ -119,6 +155,21 @@ inventory
 - 用户说“按往年题出题”，agent 能选择试卷分析和出题流程。
 - 用户回答题目后，agent 能判分、记录错题、安排复查。
 - agent 不假装未实现工具已经运行。
+
+开发顺序：
+
+1. **Prompt-orchestrated agent**：先让 `SKILL.md` 规定总控行为，由 Codex 调用 CLI，不引入复杂框架。
+2. **Tool-backed orchestrator**：每个脚本稳定后包装成工具契约，输入输出都对齐 `references/data_formats.md`。
+3. **Structured outputs**：agent 返回固定 JSON/Markdown 结构，方便 API 和前端消费。
+4. **API-backed orchestrator**：FastAPI 提供 `POST /agent/run`，由后端统一路由到工具。
+5. **Optional framework**：只有当状态分支和异步任务明显复杂后，才考虑 OpenAI Agents SDK 或 LangGraph；MVP 阶段不先上多 agent。
+
+v0.3 的原则：
+
+- 一个总控智能体负责决策。
+- Python 工具负责确定性读写和文件状态。
+- LLM 只做判断、解释、出题、评分，不直接改状态文件。
+- 所有落盘动作都通过脚本或后端服务完成。
 
 ### v0.4：FastAPI 后端
 
@@ -686,18 +737,34 @@ README 只写：
 第一版完成不是“功能很多”，而是下面这条链路稳定：
 
 ```text
-扫描资料 -> 初始化 review -> 诊断提问 -> 记录错题 -> 生成复查 -> 今日复习
+扫描资料 -> 初始化 review -> 分析试卷 -> 生成变式题 -> 生成计划 -> 一题一答 -> 记录错题 -> 今日复查
 ```
 
 必须满足：
 
 - `开始复习` 后 Codex 能先问问题，而不是先总结。
 - 至少一门真实课程跑通完整闭环。
+- 试卷/往年题能进入分析结果，而不是只停留在文件列表。
+- 变式题能被一题一答会话直接使用。
+- 计划能以“现在开始”进入第一道题或第一项任务。
 - 错题能落盘。
 - 到期项能查回。
 - 进度能恢复。
 - 对试卷/往年题能输出重点、题型、变式题和计划。
 - 数据格式简单、可读、可脚本处理。
+
+最小演示脚本序列：
+
+```text
+python3 scripts/init_course_review.py "../计算机网络"
+python3 scripts/analyze_exam.py "../计算机网络"
+python3 scripts/generate_questions.py "../计算机网络" --count 5
+python3 scripts/plan_review.py "../计算机网络" --minutes 90 --goal pass
+python3 scripts/review_session.py "../计算机网络" --source generated
+python3 scripts/due_today.py ..
+```
+
+这组命令能跑通，才算 MVP 可以进入前端开发。
 
 ## 当前最该做的下一步
 
@@ -708,12 +775,15 @@ scripts/init_course_review.py
 scripts/analyze_exam.py
 scripts/generate_questions.py
 scripts/plan_review.py
+scripts/review_session.py
+scripts/review_log.py
+scripts/due_today.py
 ```
 
 理由：
 
 - 数据契约和问题模板已经补齐。
-- 下一步应该让一门真实课程能生成 `review/` 工作区，并进入试卷分析、出题、规划的 CLI 闭环。
+- 下一步应该让一门真实课程能生成 `review/` 工作区，并进入试卷分析、出题、规划、一题一答、错题复查的 CLI 闭环。
 
 ## 下一轮开发 Sprint
 
@@ -844,7 +914,37 @@ scripts/plan_review.py
 feat: add emergency review planning script
 ```
 
-### Sprint E：错题闭环升级
+### Sprint E：一题一答会话脚本
+
+新增：
+
+```text
+scripts/review_session.py
+```
+
+第一版能力：
+
+- 读取 `generated-questions.yaml`、`cards.yaml` 或 `due_today.py --json` 输出。
+- 一次只展示 1 道题。
+- 接收用户答案。
+- 根据标准答案和评分点输出 `correct | partial | wrong`。
+- 对 `partial` 或 `wrong` 提供缺失要点和一个追问。
+- 将需要复查的结果交给 `review_log.py`，不直接手写多个状态文件。
+
+验收：
+
+- 能从 5 道生成题中开始一轮会话。
+- 用户答错 1 题后，错题能进入后续复查。
+- 会话结束时更新 `progress.md` 的下一步建议。
+- 没有题目时清楚提示先运行 `generate_questions.py` 或 `due_today.py`。
+
+提交建议：
+
+```text
+feat: add one-question review session
+```
+
+### Sprint F：错题闭环升级
 
 升级：
 

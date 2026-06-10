@@ -15,6 +15,7 @@ Frontend / User
        - MaterialMatcherTool
        - QuestionGenerationTool
        - ReviewPlannerTool
+       - ReviewSessionTool
        - QuizGradingTool
        - MistakeLogTool
        - DueReviewTool
@@ -36,8 +37,9 @@ The product flow is mostly linear:
 upload materials
   -> analyze materials / exams
   -> find priorities
-  -> plan review
   -> generate questions
+  -> plan review
+  -> run one-question review session
   -> grade answers
   -> record mistakes
   -> review due items
@@ -163,9 +165,11 @@ Use when the user is ready to practice.
 
 Actions:
 
-1. Start with diagnostic or due items.
+1. Call `ReviewSessionTool` with generated questions, due items, or diagnostic templates.
 2. Ask one question at a time.
 3. Wait for the user's answer.
+4. Route the answer to `QuizGradingTool`.
+5. Route wrong or partial answers to `MistakeLogTool`.
 
 ### grade_answer
 
@@ -253,6 +257,35 @@ generated_questions: []
 plan: {}
 ```
 
+### QuestionGenerationTool
+
+Input:
+
+```yaml
+course_id: string
+analysis_id: string
+source: exam_analysis | due_items | diagnostic
+question_count: integer
+goal: pass | score_high
+```
+
+Output:
+
+```yaml
+generated_questions_yaml_path: string
+questions:
+  - id: string
+    type: variant | mock | diagnostic | mistake_review
+    prompt: string
+    expected_answer: string
+    scoring_points:
+      - string
+    source_basis:
+      - file: string
+        evidence: string
+    suggested_minutes: integer
+```
+
 ### ReviewPlannerTool
 
 Input:
@@ -277,6 +310,30 @@ fallback_plan:
   - string
 ```
 
+### ReviewSessionTool
+
+Input:
+
+```yaml
+course_id: string
+source: generated | due | diagnostic
+question_ids:
+  - string
+mode: one_by_one
+```
+
+Output:
+
+```yaml
+session_id: string
+current_question:
+  id: string
+  prompt: string
+  suggested_minutes: integer
+remaining_count: integer
+next_action: answer_question | generate_questions | review_due
+```
+
 ### QuizGradingTool
 
 Input:
@@ -299,6 +356,59 @@ omissions:
   - string
 better_answer: string
 follow_up_question: string
+```
+
+### MistakeLogTool
+
+Input:
+
+```yaml
+course_id: string
+question_id: string
+prompt: string
+expected_answer: string
+user_answer: string
+verdict: partial | wrong
+omissions:
+  - string
+wrong_reason_tags:
+  - concept_confusion | formula_condition | process_missing | calculation_error | expression_incomplete | memory_gap
+rating: 忘了 | 困难 | 还行 | 很熟
+```
+
+Output:
+
+```yaml
+mistake_log_path: string
+cards_yaml_path: string
+card_id: string
+due_dates:
+  - string
+```
+
+### DueReviewTool
+
+Input:
+
+```yaml
+workspace_path: string
+course_id: string | null
+date: string
+output_format: text | json
+```
+
+Output:
+
+```yaml
+due_items:
+  - course_id: string
+    card_id: string
+    prompt: string
+    due: string
+    priority: high | medium | low
+errors:
+  - file: string
+    message: string
 ```
 
 ## Frontend Event Contract
@@ -365,6 +475,62 @@ If a tool does not exist yet:
 - do not pretend it ran
 - describe the intended next implementation step
 - use manual inspection only if it is reliable from available files
+
+## Agent Development Plan
+
+Build the agent layer in four steps.
+
+### Phase 1: Skill-Guided Manual Orchestration
+
+Use `SKILL.md` as the runtime contract. Codex acts as the single controller and calls local scripts manually.
+
+Acceptance:
+
+- It can explain which tool is missing instead of pretending results exist.
+- It can choose the next action from course state.
+- It keeps course-content answers inside the local source policy.
+
+### Phase 2: CLI-Backed Orchestrator
+
+Wrap each MVP script as a deterministic tool:
+
+```text
+init_course_review.py
+analyze_exam.py
+generate_questions.py
+plan_review.py
+review_session.py
+review_log.py
+due_today.py
+```
+
+Acceptance:
+
+- Each tool reads and writes only the documented review files.
+- Each tool has stable text output and a future `--json` path.
+- The orchestrator can run the full MVP sequence without hand-editing state.
+
+### Phase 3: API-Backed Orchestrator
+
+Expose the same operations through FastAPI. The frontend should call explicit endpoints for common actions and `POST /agent/run` for flexible routing.
+
+Acceptance:
+
+- API responses match `references/data_formats.md`.
+- The orchestrator returns `nextView`, `message`, `plan`, `questions`, and `dueItems` consistently.
+- The frontend never owns course logic.
+
+### Phase 4: Optional Agent Framework
+
+Only add OpenAI Agents SDK, LangGraph, or another graph framework after the CLI and API contracts are stable.
+
+Use a framework only if at least one is true:
+
+- Tool calls need retries, tracing, or async status.
+- Multiple long-running steps need resumable state.
+- Evaluation shows the single prompt controller is hard to debug.
+
+Do not split into multiple autonomous agents before MVP.
 
 ## Future Multi-Agent Split
 
