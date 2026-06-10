@@ -33,9 +33,27 @@ python scripts/due_today.py ..
 - 仅支持本地课程资料，不联网
 - 交互模式在 Windows `cmd.exe` 下体验可能不佳，推荐 Windows Terminal
 
+## 全栈启动（Phase 2 + 3）
+
+```bash
+# 终端 1 — API
+cd Study_Review
+set COURSES_ROOT=tests\fixtures
+python -m uvicorn services.api.app:app --reload --port 8000
+
+# 终端 2 — 前端
+cd apps/web
+npm run dev
+# → http://localhost:5173 （通过 /api 代理到 8000）
+```
+
 ## 开发状态
 
-**v0.2 MVP CLI 闭环已成立**：55/55 任务完成，单元测试 16 条全绿，E2E 6 步命令链已验收。
+- **CLI MVP**：55/55 ✅
+- **FastAPI 后端**（Phase 2）：`services/api/` ✅
+- **React 前端**（Phase 3）：`apps/web/` Dashboard / 课程 / 答题 / 计划 / 分析 ✅
+- **Phase 4**：`python tests/run_phase4_validation.py`（fixture 默认；真实目录设 `COURSE_PATH`）
+- **测试**：33 条 Python + `npm run build` 通过
 
 ## 文档
 

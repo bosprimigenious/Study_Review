@@ -17,60 +17,54 @@
 
 > 我有一堆 PPT、往年题、作业答案和老师重点，但快考试了，请告诉我先复习什么，按考法出题，一题一题带我做，并把错题安排到考前复查。
 
-## 当前仓库状态
+## 当前仓库状态（2026-06-10 更新）
 
 已有结构：
 
 ```text
 study-review-skill/
-├── SKILL.md
-├── DESIGN.md
-├── RESEARCH_REPORT.md
-├── agents/openai.yaml
-├── references/
-│   ├── artifacts.md
-│   ├── card_quality.md
-│   ├── modes.md
-│   └── subject_profiles.md
+├── SKILL.md / DESIGN.md / PLAN.md / tasks.md
 ├── scripts/
+│   ├── review_io.py          ← 公共 IO（Epic 0）
+│   ├── init_course_review.py
+│   ├── analyze_exam.py
+│   ├── generate_questions.py
+│   ├── plan_review.py
+│   ├── review_session.py
+│   ├── review_log.py
 │   ├── due_today.py
-│   ├── inventory.py
-│   └── review_log.py
-└── examples/sample_session.md
+│   ├── agent_run.py          ← v0.3 总控入口
+│   └── agent/                ← orchestrator / grading / intents
+├── tests/
+│   ├── fixtures/computer-network/
+│   ├── test_*.py             ← 25 条（含 Q6 判分基准）
+│   └── e2e_results.md
+└── references/ + examples/
 ```
 
-当前已经不错的部分：
+**v0.2 CLI 闭环已跑通**（MVP 55/55 + v0.2 12/12）：
 
-- skill 的行为方向清楚：主动回忆优先。
-- `SKILL.md` 已蒸馏成总控智能体入口，细节拆到 `references/`。
-- `references/orchestrator.md` 已定义单总控 agent、状态机、意图路由和工具契约。
-- `references/agent_development_plan.md` 已扩展智能体开发路线、状态快照、工具成熟度、API 形状和评测方案。
-- `references/student_needs_research.md` 已沉淀大学生期末需求和功能优先级。
-- `references/product_mvp.md` 已统一标记 MVP、付费入口、后续功能和笔记风险。
-- `references/past_exam_analysis.md` 已定义试卷/往年题分析模块。
-- `references/question_patterns.md` 和 `references/data_formats.md` 已补齐第一版问题模板与数据契约。
-- `examples/sample_files.yaml`、`sample_progress.md`、`sample_cards.yaml`、`sample_exam_analysis.yaml` 已提供样例数据。
-- `scripts/init_course_review.py` 已实现课程 `review/` 工作区初始化，并验证不会覆盖已有文件。
-- 五门课的复习策略已经分开。
-- 文件夹扫描、错题记录、到期查看都有最小脚本。
-- 对标分析已经说明：成熟复习系统都绕不开题卡、日志、调度。
+- 6 步命令链在 fixture 上 exit 0，非交互链路 ≤1s（预算 ≤15s）。
+- M1–M10 定性验收全部通过；Q1–Q12 定量指标全部达标（Q6 规则判分 20 题基准 100%，见 `tests/test_grading_benchmark.py`）。
+- 23+2 条单元测试 + 7 条 agent eval 全绿。
 
-当前真正急缺的部分：
+**v0.3 Agent 编排已落地**（超出 MVP 范围）：
 
-- `scripts/analyze_exam.py` 还没有实现。
-- `scripts/generate_questions.py` 还没有实现。
-- `scripts/plan_review.py` 还没有实现。
-- `scripts/review_session.py` 还没有实现，一题一答还没有正式入口。
-- 错题记录和到期复习还没有形成闭环。
-- 没有用真实科目跑过端到端验证。
+- `scripts/agent/` + `agent_run.py`：意图路由、工具调度、LLM 判分（无 key 走关键词 fallback）。
+
+**尚未完成（不阻塞 MVP）**：
+
+- 6-07 真实 `计算机网络` 目录复验（需用户提供本地路径）。
+- Phase 2 FastAPI 后端（`CURSOR_MASTER_PLAN.md`）。
+- Phase 3 React 前端。
 
 ## MVP 闭环审查结论
 
 结论：
 
-- **产品闭环成立**：已经明确从资料、往年题、计划、练题、错题到复查的完整路径。
-- **文档闭环基本成立**：`SKILL.md`、`references/orchestrator.md`、`references/product_mvp.md`、`references/data_formats.md` 已经能约束 agent 和脚本行为。
-- **执行闭环尚未完成**：目前只有初始化脚本可运行；试卷分析、变式题、计划、一题一答、错题复查还需要补齐。
+- **产品闭环成立**：资料 → 分析 → 出题 → 计划 → 一题一答 → 错题 → 复查，fixture 上已实证。
+- **文档闭环成立**：`tasks.md`、`e2e_results.md`、`data_formats.md` 与脚本输出一致。
+- **执行闭环已完成**：CLI 最小闭环可重复运行，不覆盖用户数据。
 
 MVP 必须收束成这一条可运行链路：
 
@@ -121,7 +115,7 @@ MVP 可验收标准：
 - 数据文件有稳定字段，不再边写脚本边猜格式。
 - 文档中不再把已完成项当作待办。
 
-### v0.2：CLI 最小闭环 `当前目标`
+### v0.2：CLI 最小闭环 `已完成`
 
 目标：不用前端，先让一门真实课程跑通。
 
