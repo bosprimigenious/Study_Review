@@ -47,6 +47,7 @@ study-review-skill/
 - 缺少稳定的课程 `review/` 目录标准。
 - 缺少可恢复的进度文件。
 - 错题记录和到期复习还没有形成闭环。
+- 缺少“根据试卷/往年题分析重点、生成变式题、形成复习计划”的明确模块。
 - 没有用真实科目跑过端到端验证。
 
 ## 功能优先级
@@ -69,6 +70,9 @@ study-review-skill/
 
 5. **真实课程端到端测试**
    必须用 `计算机网络` 或 `概率论与数理统计` 跑一次完整流程。纸面计划不等于好用。
+
+6. **试卷重点分析模块**
+   用户上传试卷、往年题、样题或作业答案后，系统要能识别题型和考点，匹配本地复习资料章节，输出高频重点，生成模拟题/变式题，并形成短期复习计划。
 
 ### P1：必要但不抢第一批
 
@@ -271,7 +275,78 @@ scripts/due_today.py
 - 复习最容易失败的地方不是第一次学，而是错过复查。
 - 这是 active recall 和 spaced repetition 的最小闭环。
 
-## 第四阶段：真实复习验证
+## 第四阶段：试卷/往年题分析重点
+
+目标：把“上传试卷/往年题 -> 找重点 -> 出变式题 -> 给计划”做成正式功能，而不是靠临时提示词。
+
+新增：
+
+```text
+references/past_exam_analysis.md
+scripts/analyze_exam.py
+```
+
+流程：
+
+```text
+上传试卷/往年题
+  ↓
+识别题型和考点
+  ↓
+匹配复习资料章节
+  ↓
+输出高频重点
+  ↓
+生成模拟题/变式题
+  ↓
+形成复习计划
+```
+
+前端必须支持：
+
+- 资料上传页：PPT、PDF、Word、Markdown、图片、压缩包。
+- 文件类型标记：课件、往年题、样题、作业答案、老师重点、笔记、教材/讲义、其他。
+- 试卷分析页：展示高频章节、题型分布、对应资料、推荐复习优先级。
+- 出题页：支持同题型变式、同考点变式、高频混合卷、保底卷、错题变式卷。
+- 一键进入复习会话：生成题后直接开始作答、判分、记录错题。
+
+后端必须支持：
+
+```text
+POST /courses/{course}/materials
+GET  /courses/{course}/materials
+POST /courses/{course}/exam-analysis
+GET  /courses/{course}/exam-analysis/latest
+POST /courses/{course}/exam-analysis/{analysis_id}/questions
+POST /courses/{course}/exam-analysis/{analysis_id}/plan
+```
+
+数据文件：
+
+```text
+course/review/
+├── files.yaml
+├── exam-analysis.yaml
+├── past-exam-patterns.yaml
+├── generated-questions.yaml
+└── plan.md
+```
+
+验收标准：
+
+- 能对一门课识别至少 3 类题型或考点。
+- 每个高频重点都能回到本地资料或试卷文件。
+- 能生成至少 5 道标注为 `模拟题` 或 `变式题` 的练习题。
+- 每题包含标准答案、评分点、来源依据和建议限时。
+- 输出 30 分钟、90 分钟、3 天三种复习计划。
+- 不承诺押题，不生成或索要泄题内容。
+
+为什么急：
+
+- 这是用户最直接的期末需求：我有试卷和资料，想知道先复习什么、会怎么考、该练什么。
+- 这个模块比普通笔记更有付费价值，也能把上传资料、规划、出题、错题复查串起来。
+
+## 第五阶段：真实复习验证
 
 目标：用当前资料验证 skill 不是“文档好看”。
 
@@ -300,7 +375,7 @@ scripts/due_today.py
 - `概率论与数理统计`：测试公式条件、计算题、错题变式。
 - `毛概PPT复习`：测试闭卷简答、关键词抽背。
 
-## 第五阶段：文档和稳定性
+## 第六阶段：文档和稳定性
 
 目标：让这个仓库可以给未来的自己或别人使用。
 
@@ -382,12 +457,14 @@ README 只写：
 2. 在 `SKILL.md` 中引用 question patterns。
 3. 写 `references/data_formats.md`。
 4. 写 `examples/sample_progress.md` 和 `examples/sample_cards.yaml`。
-5. 写 `scripts/init_course_review.py`。
-6. 升级 `review_log.py`，支持课程 review 目录和 cards.yaml。
-7. 升级 `due_today.py`，支持 workspace 扫描。
-8. 用 `计算机网络` 跑端到端。
-9. 补 README。
-10. 补最小测试。
+5. 写 `references/past_exam_analysis.md`。
+6. 写 `scripts/init_course_review.py`。
+7. 写 `scripts/analyze_exam.py`。
+8. 升级 `review_log.py`，支持课程 review 目录和 cards.yaml。
+9. 升级 `due_today.py`，支持 workspace 扫描。
+10. 用 `计算机网络` 跑端到端。
+11. 补 README。
+12. 补最小测试。
 
 ## 第一版完成定义
 
@@ -404,6 +481,7 @@ README 只写：
 - 错题能落盘。
 - 到期项能查回。
 - 进度能恢复。
+- 对试卷/往年题能输出重点、题型、变式题和计划。
 - 数据格式简单、可读、可脚本处理。
 
 ## 当前最该做的下一步

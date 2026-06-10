@@ -18,6 +18,7 @@ Load these files only when needed:
 - `references/card_quality.md`: rules and examples for generating flashcards or active-recall questions.
 - `references/artifacts.md`: file formats for outlines, mistake logs, and simple spaced repetition.
 - `references/source_policy.md`: mandatory source restrictions for factual answers and agent/subtask behavior.
+- `references/past_exam_analysis.md`: workflow, data model, frontend/backend requirements, and safety rules for analyzing uploaded exams or past papers.
 
 Use these scripts when they fit the task:
 
@@ -102,6 +103,8 @@ When working with many files, first inspect filenames and choose likely high-val
 If a course has both "完整版" and "课堂版", use "课堂版" for fast exam orientation and "完整版" when a concept is unclear or needs deeper explanation.
 
 If a course has homework answers or sample papers, use them to infer exam style and high-frequency question types.
+
+If a course has past exams, sample papers, or user-uploaded exam papers, treat them as high-priority signals for exam analysis. Use them to identify repeated topics, question types, answer shapes, and scoring priorities, then match those topics back to local course materials before generating review plans or variant questions.
 
 ## Review Modes
 
@@ -220,7 +223,69 @@ Follow a time-boxed structure:
 
 Keep explanations short. Prefer scoring, templates, and repeat questions.
 
-### 7. Mistake Log Mode
+### 7. Past Exam Analysis Mode
+
+Use when the user asks to analyze a paper, use past exams, generate questions from exams, find key points from papers, or plan review from uploaded materials.
+
+Trigger phrases include:
+
+- "根据试卷分析重点"
+- "按往年题出题"
+- "看看这套卷子该复习什么"
+- "根据复习资料规划"
+- "上传往年题后生成计划"
+
+Follow this pipeline:
+
+```text
+上传试卷/往年题
+  -> 识别题型和考点
+  -> 匹配复习资料章节
+  -> 输出高频重点
+  -> 生成模拟题/变式题
+  -> 形成复习计划
+```
+
+When analyzing exams:
+
+1. Identify exam-like files first: past papers, sample exams, homework answers, teacher focus documents.
+2. Extract question types, topics, answer shapes, and likely scoring points.
+3. Match each topic to local PPT/PDF/notes before explaining factual content.
+4. Rank priorities by repeated evidence, scoring value, and time-to-improve.
+5. Generate safe variants, not predicted original exam questions.
+6. Build a concrete plan for the user's time window.
+
+Output format:
+
+```markdown
+# 试卷重点分析
+
+## 高频章节
+- ...
+
+## 高频题型
+- 题型：考点 / 常见问法 / 对应资料
+
+## 先复习
+1. ...
+
+## 变式练习
+1. ...
+
+## 复习计划
+- 30 分钟：
+- 90 分钟：
+- 3 天：
+```
+
+Safety rules:
+
+- Do not claim a topic will definitely appear.
+- Do not generate or request leaked exam content.
+- Label generated practice as `模拟题` or `变式题`.
+- Cite local source filenames for important priorities.
+
+### 8. Mistake Log Mode
 
 Use whenever the user answers incorrectly or says a topic is weak.
 

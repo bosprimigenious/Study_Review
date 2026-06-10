@@ -2,6 +2,16 @@
 
 `study-review` is a Codex skill for exam review from local course materials. It is designed to ask active-recall questions, grade answers, record mistakes, and schedule later review.
 
+It is also being extended toward a full exam-prep workflow:
+
+```text
+upload review materials / past exams
+  -> analyze question types and key topics
+  -> match topics to local course materials
+  -> generate variant practice questions
+  -> build a concrete review plan
+```
+
 ## Source Policy
 
 By default, this skill only uses files under:
@@ -36,6 +46,10 @@ Example prompts:
 今天该复习什么
 ```
 
+```text
+根据这份试卷和复习资料分析重点，并出 10 道变式题
+```
+
 ## Repository Layout
 
 ```text
@@ -55,4 +69,10 @@ The first version focuses on this loop:
 scan materials -> ask questions -> grade answers -> record mistakes -> schedule review
 ```
 
-More advanced features such as Anki export, FSRS scheduling, full PPT/PDF extraction, or a React interface should come after this review loop works reliably.
+The next product-facing loop is:
+
+```text
+upload exams/materials -> find priorities -> generate variants -> plan review -> drill weak points
+```
+
+More advanced features such as Anki export, FSRS scheduling, full PPT/PDF extraction, or a polished React interface should come after these review and exam-analysis loops work reliably.

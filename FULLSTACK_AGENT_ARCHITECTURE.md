@@ -32,6 +32,9 @@ Skill: 继续保留 SKILL.md 作为行为规范和 agent 操作手册
 - 科目进度
 - 复习模式切换
 - 文件/课程选择
+- 复习资料上传
+- 往年题/试卷重点分析
+- 按试卷题型生成变式题
 
 选择原因：
 
@@ -170,12 +173,46 @@ React + TypeScript 前端不应该负责智能判断。它负责把复习流程�
    - due 日期
    - difficulty
 
+6. **Materials Upload**
+   - 拖拽上传 PPT、PDF、Word、Markdown、图片或压缩包
+   - 用户确认文件类型：课件、往年题、样题、作业答案、老师重点、笔记、教材/讲义、其他
+   - 显示每个文件的解析状态
+   - 上传后提示是否进入试卷分析或生成今日计划
+
+7. **Exam Analysis**
+   - 选择一门课和若干试卷/往年题
+   - 选择分析目标：重点分析、高频题型、变式题、复习计划
+   - 展示高频章节、题型分布、对应复习资料、推荐优先级
+   - 支持一键生成模拟题/变式题并加入复习会话
+
 ### TypeScript 数据类型
 
 前端应围绕这些类型建模：
 
 ```ts
 export type Rating = "忘了" | "困难" | "还行" | "很熟";
+
+export type MaterialType =
+  | "slides"
+  | "past_exam"
+  | "mock_exam"
+  | "homework_answer"
+  | "teacher_focus"
+  | "notes"
+  | "textbook"
+  | "other";
+
+export interface MaterialFile {
+  id: string;
+  courseId: string;
+  name: string;
+  type: MaterialType;
+  size: number;
+  ext: string;
+  uploadedAt: string;
+  status: "pending" | "uploaded" | "indexing" | "ready" | "failed";
+  path?: string;
+}
 
 export interface StudyCard {
   id: string;
@@ -218,6 +255,63 @@ export interface CourseProgress {
     status: "未开始" | "复习中" | "已完成";
   }[];
 }
+
+export interface PastExamPattern {
+  id: string;
+  courseId: string;
+  sourceFile: string;
+  year?: string;
+  questionType: string;
+  topic: string;
+  chapter?: string;
+  difficulty: "basic" | "medium" | "hard";
+  originalQuestion?: string;
+  answerShape: string;
+  scoringPoints: string[];
+  reusableTemplate: string;
+}
+
+export interface ExamPriority {
+  topic: string;
+  chapter?: string;
+  weight: number;
+  evidence: {
+    sourceFile: string;
+    reason: string;
+  }[];
+  recommendedAction: string;
+}
+
+export interface GeneratedQuestion {
+  id: string;
+  courseId: string;
+  basedOnPatternId?: string;
+  sourceMaterialIds: string[];
+  questionType: string;
+  topic: string;
+  prompt: string;
+  expectedAnswer: string;
+  scoringPoints: string[];
+  difficulty: "basic" | "medium" | "hard";
+  similarity: "same_type" | "same_topic" | "mixed";
+  timeLimitSec?: number;
+}
+
+export interface ExamAnalysis {
+  id: string;
+  courseId: string;
+  sourceFileIds: string[];
+  generatedAt: string;
+  patterns: PastExamPattern[];
+  priorities: ExamPriority[];
+  generatedQuestions: GeneratedQuestion[];
+  plan: {
+    thirtyMinutes?: string[];
+    ninetyMinutes?: string[];
+    threeDays?: string[];
+    sevenDays?: string[];
+  };
+}
 ```
 
 ## 后端职责
@@ -235,6 +329,12 @@ PATCH /courses/{course}/progress
 GET  /due-today
 GET  /cards
 POST /cards
+POST /courses/{course}/materials
+GET  /courses/{course}/materials
+POST /courses/{course}/exam-analysis
+GET  /courses/{course}/exam-analysis/latest
+POST /courses/{course}/exam-analysis/{analysis_id}/questions
+POST /courses/{course}/exam-analysis/{analysis_id}/plan
 POST /review-session/start
 POST /review-session/answer
 POST /mistakes
@@ -248,12 +348,18 @@ services/api/
 ├── routes/
 │   ├── courses.py
 │   ├── cards.py
+│   ├── materials.py
+│   ├── exams.py
 │   ├── sessions.py
 │   └── mistakes.py
 ├── core/
 │   ├── scheduler.py
 │   ├── inventory.py
 │   ├── storage.py
+│   ├── material_matcher.py
+│   ├── exam_analyzer.py
+│   ├── question_generator.py
+│   ├── planner.py
 │   └── agent.py
 └── tests/
 ```
@@ -266,7 +372,12 @@ services/api/
 course/review/
 ├── progress.md
 ├── mistake-log.md
-└── cards.yaml
+├── cards.yaml
+├── files.yaml
+├── exam-analysis.yaml
+├── past-exam-patterns.yaml
+├── generated-questions.yaml
+└── plan.md
 ```
 
 以后再迁移到 SQLite：
@@ -274,6 +385,10 @@ course/review/
 ```text
 study_review.db
 ├── courses
+├── material_files
+├── exam_analyses
+├── past_exam_patterns
+├── generated_questions
 ├── cards
 ├── mistakes
 ├── review_sessions
@@ -409,6 +524,42 @@ Agent 判分并生成反馈
 前端展示今日待复习列表
 ```
 
+### 上传资料并分析试卷
+
+```text
+用户上传 PPT / PDF / 往年题
+  ↓
+前端 POST /courses/{course}/materials
+  ↓
+后端保存文件并写入 files.yaml
+  ↓
+用户点击“分析试卷”
+  ↓
+前端 POST /courses/{course}/exam-analysis
+  ↓
+后端识别题型、考点、答案结构
+  ↓
+后端匹配本地课件/复习资料
+  ↓
+Agent 生成重点、变式题和计划
+  ↓
+前端展示 Exam Analysis 页面
+```
+
+### 按试卷生成练习
+
+```text
+用户选择“高频混合卷”或“同题型变式”
+  ↓
+前端 POST /courses/{course}/exam-analysis/{analysis_id}/questions
+  ↓
+后端从 past-exam-patterns.yaml 和本地资料生成题目
+  ↓
+写入 generated-questions.yaml / cards.yaml
+  ↓
+前端进入 Quiz Session
+```
+
 ## 开发阶段
 
 ### Phase 0：继续强化 Skill 仓库
@@ -466,7 +617,9 @@ FastAPI
 1. 今日复习
 2. 复习会话
 3. 错题本
-4. 科目进度
+4. 资料上传
+5. 试卷分析
+6. 科目进度
 
 不要先做漂亮 dashboard。先让答题体验顺。
 
