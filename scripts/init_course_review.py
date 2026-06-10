@@ -6,11 +6,19 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import sys
 from datetime import date
 from pathlib import Path
 
-
 STUDY_EXTENSIONS = {".pdf", ".ppt", ".pptx", ".md", ".txt", ".doc", ".docx", ".jpg", ".jpeg", ".png"}
+
+TYPE_KEYWORDS: list[tuple[str, list[str]]] = [
+    ("past_exam", ["往年", "真题", "历年", "试题", "期末考试", "试卷"]),
+    ("mock_exam", ["样题", "模拟", "sample", "mock"]),
+    ("homework_answer", ["作业答案", "习题答案", "作业解答", "hw", "homework"]),
+    ("teacher_focus", ["重点", "范围", "考纲", "划范围", "考点", "复习提纲"]),
+    ("notes", ["笔记", "note", "总结", "整理"]),
+]
 
 
 def slugify(value: str) -> str:
@@ -23,20 +31,17 @@ def yaml_scalar(value: str) -> str:
 
 
 def guess_material_type(path: Path) -> str:
-    name = path.name.lower()
     original_name = path.name
-    if any(key in original_name for key in ("往年", "真题", "历年")):
-        return "past_exam"
-    if any(key in original_name for key in ("样题", "模拟", "sample")):
-        return "mock_exam"
-    if "作业" in original_name and "答案" in original_name:
-        return "homework_answer"
-    if any(key in original_name for key in ("重点", "范围", "考纲", "划")):
-        return "teacher_focus"
+    lowered = original_name.lower()
+    for material_type, keywords in TYPE_KEYWORDS:
+        for keyword in keywords:
+            if keyword.isascii():
+                if keyword.lower() in lowered:
+                    return material_type
+            elif keyword in original_name:
+                return material_type
     if path.suffix.lower() in {".ppt", ".pptx"}:
         return "slides"
-    if any(key in name for key in ("note", "notes")) or path.suffix.lower() in {".md", ".txt"}:
-        return "notes"
     return "other"
 
 
@@ -153,42 +158,77 @@ def write_if_missing(path: Path, content: str) -> bool:
     return True
 
 
+def initialize_course(
+    course_dir: Path,
+    *,
+    dry_run: bool = False,
+) -> dict[str, object]:
+    review_dir = course_dir / "review"
+    files = collect_materials(course_dir)
+    planned = initial_files(course_dir, files)
+    created: list[str] = []
+    skipped: list[str] = []
+
+    if dry_run:
+        for name in planned:
+            if (review_dir / name).exists():
+                skipped.append(name)
+            else:
+                created.append(name)
+    else:
+        review_dir.mkdir(exist_ok=True)
+        for name, content in planned.items():
+            if write_if_missing(review_dir / name, content):
+                created.append(name)
+            else:
+                skipped.append(name)
+
+    return {
+        "schema_version": 1,
+        "course_id": slugify(course_dir.name),
+        "course_dir": str(course_dir.resolve()),
+        "review_dir": str(review_dir.resolve()),
+        "materials_count": len(files),
+        "created": created,
+        "skipped": skipped,
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("course", help="Course directory to initialize")
     parser.add_argument("--dry-run", action="store_true", help="Print planned files without writing")
+    parser.add_argument("--json", action="store_true", help="Output result as JSON")
     args = parser.parse_args()
 
     course_dir = Path(args.course).resolve()
     if not course_dir.exists() or not course_dir.is_dir():
-        raise SystemExit(f"Course directory not found: {course_dir}")
+        print(f"Course directory not found: {course_dir}", file=sys.stderr)
+        raise SystemExit(1)
 
-    review_dir = course_dir / "review"
-    files = collect_materials(course_dir)
-    planned = initial_files(course_dir, files)
+    result = initialize_course(course_dir, dry_run=args.dry_run)
 
-    print(f"Course: {course_dir}")
-    print(f"Materials detected: {len(files)}")
-    print(f"Review directory: {review_dir}")
-
-    if args.dry_run:
-        for name in planned:
-            status = "exists" if (review_dir / name).exists() else "create"
-            print(f"- {status}: {review_dir / name}")
-        return
-
-    review_dir.mkdir(exist_ok=True)
-    created = 0
-    skipped = 0
-    for name, content in planned.items():
-        if write_if_missing(review_dir / name, content):
-            created += 1
-            print(f"- created: {review_dir / name}")
+    if args.json:
+        print(json.dumps(result, ensure_ascii=False))
+    else:
+        review_dir = course_dir / "review"
+        print(f"Course: {course_dir}")
+        print(f"Materials detected: {result['materials_count']}")
+        print(f"Review directory: {review_dir}")
+        if args.dry_run:
+            for name in result["created"]:
+                print(f"- create: {review_dir / name}")
+            for name in result["skipped"]:
+                print(f"- exists: {review_dir / name}")
         else:
-            skipped += 1
-            print(f"- skipped existing: {review_dir / name}")
-
-    print(f"Done. created={created}, skipped={skipped}")
+            for name in result["created"]:
+                print(f"- created: {review_dir / name}")
+            for name in result["skipped"]:
+                print(f"- skipped existing: {review_dir / name}")
+            print(
+                f"Done. created={len(result['created'])}, "
+                f"skipped={len(result['skipped'])}"
+            )
 
 
 if __name__ == "__main__":
