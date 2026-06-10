@@ -388,6 +388,8 @@ Only consider OpenAI Agents SDK or LangGraph after:
 
 ## UI Direction
 
+For open-source benchmarks, per-page copy targets, and demo links, see `references/ui_references.md`.
+
 The frontend should feel like:
 
 ```text
