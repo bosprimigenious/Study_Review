@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -241,6 +242,30 @@ def q12_bad_yaml_tolerance() -> tuple[bool, float]:
         return good_courses[0] in names and len(names) >= 4, elapsed
 
 
+def q6_grading_accuracy() -> tuple[float, bool]:
+    """20-case keyword grader benchmark (tasks.md Q6, threshold ≥70%)."""
+    sys.path.insert(0, str(ROOT / "scripts"))
+    sys.path.insert(0, str(ROOT / "tests"))
+    os.environ.pop("OPENAI_API_KEY", None)
+
+    from agent.grading import _keyword_grade  # noqa: E402
+    from test_grading_benchmark import BENCHMARK_CASES, Q6_THRESHOLD  # noqa: E402
+
+    hits = 0
+    for case in BENCHMARK_CASES:
+        result = _keyword_grade(
+            str(case["prompt"]),
+            "",
+            list(case["scoring_points"]),
+            str(case["answer"]),
+        )
+        if result["verdict"] == case["expected"]:
+            hits += 1
+
+    accuracy = hits / len(BENCHMARK_CASES)
+    return accuracy, accuracy >= Q6_THRESHOLD
+
+
 def main() -> int:
     if REVIEW.exists():
         shutil.rmtree(REVIEW)
@@ -326,6 +351,7 @@ def main() -> int:
     checks = verify_outputs()
     q11_ok = q11_id_collision()
     q12_ok, q12_elapsed = q12_bad_yaml_tolerance()
+    q6_accuracy, q6_ok = q6_grading_accuracy()
 
     report = {
         "date": date.today().isoformat(),
@@ -342,7 +368,11 @@ def main() -> int:
                 "actual_sec": timings["Q5_time_to_first_question"],
                 "pass": timings["Q5_time_to_first_question"] <= 90,
             },
-            "Q6_grading_accuracy": {"status": "deferred", "note": "待 v0.2 单元测试覆盖"},
+            "Q6_grading_accuracy": {
+                "threshold": "≥70%",
+                "actual": f"{q6_accuracy:.0%}",
+                "pass": q6_ok,
+            },
             "Q7_mistake_log_latency": {"status": "manual_ok", "note": "session 同步落盘，due 立即可见"},
             "Q8_due_today": {"threshold_sec": 2, "actual_sec": timings["Q8_due"], "pass": timings["Q8_due"] <= 2},
             "Q9_scoring_points_coverage": {"threshold": "100%", "pass": checks["details"]["q9_scoring_points"]},
@@ -369,7 +399,7 @@ def main() -> int:
         "# E2E Results",
         "",
         f"Date: {report['date']}",
-        f"Fixture: `tests/fixtures/computer-network`",
+        "Fixture: `tests/fixtures/computer-network`",
         "",
         "## 6-step chain",
         "",
@@ -415,14 +445,15 @@ def main() -> int:
             lines.append(f"| {key} | manual | ≤60s | sync | PASS |")
             continue
         threshold = metric.get("threshold_sec") or metric.get("threshold")
-        actual = metric.get("actual_sec", metric.get("pass"))
+        actual = metric.get("actual_sec") or metric.get("actual") or metric.get("pass")
         passed = "PASS" if metric.get("pass") else "FAIL"
         lines.append(f"| {key} | | {threshold} | {actual} | {passed} |")
 
     lines.extend(["", "## Details", "", "```json", json.dumps(report, ensure_ascii=False, indent=2), "```", ""])
     out_path.write_text("\n".join(lines), encoding="utf-8")
-    print(json.dumps({"all_pass": checks["all_pass"] and q11_ok and q12_ok, "report": str(out_path)}, ensure_ascii=False))
-    return 0 if checks["all_pass"] and q11_ok and q12_ok else 1
+    all_ok = checks["all_pass"] and q11_ok and q12_ok and q6_ok
+    print(json.dumps({"all_pass": all_ok, "report": str(out_path)}, ensure_ascii=False))
+    return 0 if all_ok else 1
 
 
 if __name__ == "__main__":

@@ -7,14 +7,14 @@ Fixture: `tests/fixtures/computer-network`
 
 | Step | Exit | Seconds |
 |------|------|---------|
-| Q1_init | 0 | 0.111 |
-| Q2_analyze | 0 | 0.146 |
-| Q3_generate | 0 | 0.147 |
-| Q4_plan | 0 | 0.162 |
-| session | 0 | 0.279 |
-| Q8_due | 0 | 0.142 |
+| Q1_init | 0 | 0.087 |
+| Q2_analyze | 0 | 0.129 |
+| Q3_generate | 0 | 0.13 |
+| Q4_plan | 0 | 0.144 |
+| session | 0 | 0.301 |
+| Q8_due | 0 | 0.14 |
 
-Non-interactive chain total (excl. session): **0.708s** (budget ≤15s)
+Non-interactive chain total (excl. session): **0.63s** (budget ≤15s)
 
 ## Epic 6 checks
 
@@ -29,18 +29,18 @@ Non-interactive chain total (excl. session): **0.708s** (budget ≤15s)
 
 | Q | Metric | Threshold | Actual | Pass |
 |---|--------|-----------|--------|------|
-| Q1_init | | 2 | 0.111 | PASS |
-| Q2_analyze | | 3 | 0.146 | PASS |
-| Q3_generate | | 5 | 0.147 | PASS |
-| Q4_plan | | 3 | 0.162 | PASS |
-| Q5_time_to_first_question | | 90 | 0.987 | PASS |
-| Q6_grading_accuracy | deferred | — | — | 待 v0.2 |
+| Q1_init | | 2 | 0.087 | PASS |
+| Q2_analyze | | 3 | 0.129 | PASS |
+| Q3_generate | | 5 | 0.13 | PASS |
+| Q4_plan | | 3 | 0.144 | PASS |
+| Q5_time_to_first_question | | 90 | 0.931 | PASS |
+| Q6_grading_accuracy | | ≥70% | 100% | PASS |
 | Q7_mistake_log_latency | manual | ≤60s | sync | PASS |
-| Q8_due_today | | 2 | 0.142 | PASS |
+| Q8_due_today | | 2 | 0.14 | PASS |
 | Q9_scoring_points_coverage | | 100% | True | PASS |
 | Q10_evidence_trace | | 100% | True | PASS |
 | Q11_id_unique | | 100% | True | PASS |
-| Q12_bad_yaml_tolerance | | 100% | 0.168 | PASS |
+| Q12_bad_yaml_tolerance | | 100% | 0.149 | PASS |
 
 ## Details
 
@@ -48,13 +48,13 @@ Non-interactive chain total (excl. session): **0.708s** (budget ≤15s)
 {
   "date": "2026-06-10",
   "timings_sec": {
-    "Q1_init": 0.111,
-    "Q2_analyze": 0.146,
-    "Q3_generate": 0.147,
-    "Q4_plan": 0.162,
-    "session": 0.279,
-    "Q8_due": 0.142,
-    "Q5_time_to_first_question": 0.987
+    "Q1_init": 0.087,
+    "Q2_analyze": 0.129,
+    "Q3_generate": 0.13,
+    "Q4_plan": 0.144,
+    "session": 0.301,
+    "Q8_due": 0.14,
+    "Q5_time_to_first_question": 0.931
   },
   "exit_codes": {
     "Q1_init": 0,
@@ -102,32 +102,33 @@ Non-interactive chain total (excl. session): **0.708s** (budget ≤15s)
   "metrics": {
     "Q1_init": {
       "threshold_sec": 2,
-      "actual_sec": 0.111,
+      "actual_sec": 0.087,
       "pass": true
     },
     "Q2_analyze": {
       "threshold_sec": 3,
-      "actual_sec": 0.146,
+      "actual_sec": 0.129,
       "pass": true
     },
     "Q3_generate": {
       "threshold_sec": 5,
-      "actual_sec": 0.147,
+      "actual_sec": 0.13,
       "pass": true
     },
     "Q4_plan": {
       "threshold_sec": 3,
-      "actual_sec": 0.162,
+      "actual_sec": 0.144,
       "pass": true
     },
     "Q5_time_to_first_question": {
       "threshold_sec": 90,
-      "actual_sec": 0.987,
+      "actual_sec": 0.931,
       "pass": true
     },
     "Q6_grading_accuracy": {
-      "status": "deferred",
-      "note": "待 v0.2 单元测试覆盖"
+      "threshold": "≥70%",
+      "actual": "100%",
+      "pass": true
     },
     "Q7_mistake_log_latency": {
       "status": "manual_ok",
@@ -135,7 +136,7 @@ Non-interactive chain total (excl. session): **0.708s** (budget ≤15s)
     },
     "Q8_due_today": {
       "threshold_sec": 2,
-      "actual_sec": 0.142,
+      "actual_sec": 0.14,
       "pass": true
     },
     "Q9_scoring_points_coverage": {
@@ -153,9 +154,9 @@ Non-interactive chain total (excl. session): **0.708s** (budget ≤15s)
     "Q12_bad_yaml_tolerance": {
       "threshold": "100%",
       "pass": true,
-      "actual_sec": 0.168
+      "actual_sec": 0.149
     }
   },
-  "chain_total_sec": 0.708
+  "chain_total_sec": 0.63
 }
 ```

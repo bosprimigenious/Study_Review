@@ -6,11 +6,13 @@
 ## 依据
 - exam-analysis.yaml（analysis id: exam-analysis-computer-network-001）
 - progress.md（当前阶段：诊断，最弱：待诊断）
+- cards.yaml（due items: 11 条）
 
 ## 先做
 - 25min: 练习子网划分与路由选择步骤（计算机网络样题(5).pdf）
 - 20min: 闭卷回忆 TCP 拥塞控制四个阶段（6-Transport(3).pptx）
 - 20min: 闭卷回忆帧结构与差错校验流程（6-Transport(3).pptx）
+- 10min: 复查 11 条 due 错题（cards.yaml）
 
 ## 后做
 - 无次要任务
