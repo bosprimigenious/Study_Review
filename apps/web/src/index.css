@@ -1,0 +1,307 @@
+@import 'tailwindcss';
+@import './lib/theme.css';
+
+@theme {
+  --font-sans: 'Noto Sans SC', 'Inter', 'PingFang SC', 'Microsoft YaHei', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Noto Sans SC', ui-monospace, monospace;
+  /* 全站刻度（html=20px）：18 / 20 / 22 / 26 / 28 / 32 px */
+  --text-xs: 0.9rem;
+  --text-sm: 1rem;
+  --text-base: 1.1rem;
+  --text-lg: 1.3rem;
+  --text-xl: 1.4rem;
+  --text-2xl: 1.6rem;
+}
+
+html {
+  font-size: 20px;
+  -webkit-text-size-adjust: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+.type-page {
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+}
+
+.type-section {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+}
+
+/* 答题题干：无衬线，不用等宽 */
+.type-question {
+  font-family: var(--font-sans);
+  font-size: var(--text-lg);
+  font-weight: 500;
+  line-height: 1.65;
+  letter-spacing: 0.02em;
+}
+
+.type-input {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+}
+
+.type-muted {
+  font-size: var(--text-base);
+  line-height: 1.55;
+  color: var(--muted-foreground);
+}
+
+/* 仅用于命令行、文件名等 */
+.type-mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
+/* NovaOrbit 风：暖米底 + 淡网格 */
+.app-shell {
+  background-color: var(--background);
+  background-image:
+    linear-gradient(rgba(120, 113, 108, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(120, 113, 108, 0.055) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.dark .app-shell {
+  background-image:
+    linear-gradient(rgba(168, 162, 158, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(168, 162, 158, 0.06) 1px, transparent 1px);
+}
+
+/* 主行动 Hero：白卡 + 轻阴影，橙只留给按钮 */
+.hero-panel {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: var(--shadow-md);
+  padding: 1.5rem 1.75rem;
+}
+
+/* 指标小卡 */
+.stat-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.25rem 1.35rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--card);
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-tile-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--text-base);
+  color: var(--muted-foreground);
+}
+
+.stat-tile-value {
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+/* 卡片交互 */
+.card-surface {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.card-interactive:hover {
+  border-color: color-mix(in srgb, var(--foreground) 12%, var(--border));
+  background: var(--accent);
+  transform: translateY(-1px);
+}
+
+/* Linear 风列表行 */
+.list-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.list-row:hover {
+  background: var(--accent);
+  border-color: var(--border);
+}
+
+/* 键盘快捷键徽标 */
+.kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.875rem;
+  height: 1.75rem;
+  padding: 0 0.5rem;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  line-height: 1;
+  color: var(--muted-foreground);
+  background: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 0.25rem;
+  box-shadow: 0 1px 0 var(--border);
+}
+
+.badge-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.5rem;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+/* 骨架屏流光 */
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--muted) 0%,
+    color-mix(in srgb, var(--muted) 55%, var(--foreground)) 50%,
+    var(--muted) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* 入场动画 */
+@keyframes fade-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.anim-in {
+  animation: fade-slide-up 0.35s ease-out both;
+}
+
+@keyframes collapsible-down {
+  from { height: 0; opacity: 0; }
+  to { height: var(--radix-collapsible-content-height); opacity: 1; }
+}
+
+@keyframes collapsible-up {
+  from { height: var(--radix-collapsible-content-height); opacity: 1; }
+  to { height: 0; opacity: 0; }
+}
+
+[data-state='open'].collapsible-content {
+  animation: collapsible-down 0.2s ease-out;
+}
+
+[data-state='closed'].collapsible-content {
+  animation: collapsible-up 0.2s ease-out;
+}
+
+/* Quiz 3D 翻转 */
+.transform-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+.perspective-\[1200px\] {
+  perspective: 1200px;
+}
+
+.flip-inner {
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+/* Sonner Toast — 与侧栏同量级字号 */
+[data-sonner-toaster] {
+  --width: 26rem;
+}
+
+[data-sonner-toast] {
+  padding: 1rem 1.15rem !important;
+  font-size: var(--text-base) !important;
+  border-radius: var(--radius) !important;
+}
+
+[data-sonner-toast] [data-title] {
+  font-size: var(--text-lg) !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+}
+
+[data-sonner-toast] [data-description] {
+  font-size: var(--text-base) !important;
+  line-height: 1.5 !important;
+}
+
+[data-sonner-toast] [data-close-button] {
+  width: 1.75rem !important;
+  height: 1.75rem !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer { animation: none; }
+  .card-interactive:hover { transform: none; }
+  .flip-inner { transition: none; }
+  .rotate-y-180 { transform: none; }
+  .anim-in { animation: none; }
+}
