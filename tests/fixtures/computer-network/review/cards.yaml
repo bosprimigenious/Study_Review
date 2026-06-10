@@ -1,0 +1,16 @@
+cards:
+- id: card-computer-network-ip-routing-and-subnetting-1
+  course_id: computer-network
+  subject: computer-network
+  topic: IP routing and subnetting
+  card_type: mistake_review
+  prompt: 请简述 IP routing and subnetting 的定义和核心要点。
+  answer: 说明定义；说明要点；说明例子
+  scoring_points: []
+  difficulty: medium
+  tags:
+  - 表达不完整
+  schedule:
+    rating: 忘了
+    last_reviewed: '2026-06-10'
+    due: '2026-06-10'

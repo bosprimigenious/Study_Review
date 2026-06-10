@@ -1,0 +1,189 @@
+schema_version: 1
+questions:
+- id: gen-computer-network-001
+  course_id: computer-network
+  based_on_pattern_id: pattern-computer-network-001
+  source_materials:
+  - 计算机网络样题(5).pdf
+  question_type: short_answer
+  topic: IP routing and subnetting
+  difficulty: medium
+  similarity: same_type
+  label: 变式题
+  prompt: 请简述 IP routing and subnetting 的定义和核心要点。
+  expected_answer: ''
+  scoring_points:
+  - 说明定义
+  - 说明要点
+  - 说明例子
+  time_limit_sec: 180
+- id: gen-computer-network-002
+  course_id: computer-network
+  based_on_pattern_id: pattern-computer-network-003
+  source_materials:
+  - 6-Transport(3).pptx
+  question_type: short_answer
+  topic: Error detection and MAC
+  difficulty: medium
+  similarity: same_type
+  label: 变式题
+  prompt: 请简述 Error detection and MAC 的定义和核心要点。
+  expected_answer: ''
+  scoring_points:
+  - 说明定义
+  - 说明要点
+  - 说明例子
+  time_limit_sec: 180
+- id: gen-computer-network-003
+  course_id: computer-network
+  based_on_pattern_id: pattern-computer-network-002
+  source_materials:
+  - 6-Transport(3).pptx
+  question_type: short_answer
+  topic: TCP congestion control
+  difficulty: medium
+  similarity: same_type
+  label: 变式题
+  prompt: 请简述 TCP congestion control 的定义和核心要点。
+  expected_answer: ''
+  scoring_points:
+  - 说明定义
+  - 说明要点
+  - 说明例子
+  time_limit_sec: 180
+- id: gen-computer-network-004
+  course_id: computer-network
+  based_on_pattern_id: pattern-computer-network-001
+  source_materials:
+  - 计算机网络样题(5).pdf
+  question_type: short_answer
+  topic: IP routing and subnetting
+  difficulty: medium
+  similarity: same_type
+  label: 变式题
+  prompt: 请简述 IP routing and subnetting 的定义和核心要点。
+  expected_answer: ''
+  scoring_points:
+  - 说明定义
+  - 说明要点
+  - 说明例子
+  time_limit_sec: 180
+- id: gen-computer-network-005
+  course_id: computer-network
+  based_on_pattern_id: pattern-computer-network-003
+  source_materials:
+  - 6-Transport(3).pptx
+  question_type: short_answer
+  topic: Error detection and MAC
+  difficulty: medium
+  similarity: same_type
+  label: 变式题
+  prompt: 请简述 Error detection and MAC 的定义和核心要点。
+  expected_answer: ''
+  scoring_points:
+  - 说明定义
+  - 说明要点
+  - 说明例子
+  time_limit_sec: 180
+- id: gen-computer-network-006
+  course_id: computer-network
+  based_on_pattern_id: pattern-computer-network-001
+  source_materials:
+  - 计算机网络样题(5).pdf
+  question_type: short_answer
+  topic: IP routing and subnetting
+  difficulty: medium
+  similarity: same_type
+  label: 变式题
+  prompt: 请简述 IP routing and subnetting 的定义和核心要点。
+  expected_answer: ''
+  scoring_points:
+  - 说明定义
+  - 说明要点
+  - 说明例子
+  time_limit_sec: 180
+- id: gen-computer-network-007
+  course_id: computer-network
+  based_on_pattern_id: pattern-computer-network-003
+  source_materials:
+  - 6-Transport(3).pptx
+  question_type: short_answer
+  topic: Error detection and MAC
+  difficulty: medium
+  similarity: same_type
+  label: 变式题
+  prompt: 请简述 Error detection and MAC 的定义和核心要点。
+  expected_answer: ''
+  scoring_points:
+  - 说明定义
+  - 说明要点
+  - 说明例子
+  time_limit_sec: 180
+- id: gen-computer-network-008
+  course_id: computer-network
+  based_on_pattern_id: pattern-computer-network-001
+  source_materials:
+  - 计算机网络样题(5).pdf
+  question_type: short_answer
+  topic: IP routing and subnetting
+  difficulty: medium
+  similarity: same_type
+  label: 变式题
+  prompt: 请简述 IP routing and subnetting 的定义和核心要点。
+  expected_answer: ''
+  scoring_points:
+  - 说明定义
+  - 说明要点
+  - 说明例子
+  time_limit_sec: 180
+- id: gen-computer-network-009
+  course_id: computer-network
+  based_on_pattern_id: pattern-computer-network-003
+  source_materials:
+  - 6-Transport(3).pptx
+  question_type: short_answer
+  topic: Error detection and MAC
+  difficulty: medium
+  similarity: same_type
+  label: 变式题
+  prompt: 请简述 Error detection and MAC 的定义和核心要点。
+  expected_answer: ''
+  scoring_points:
+  - 说明定义
+  - 说明要点
+  - 说明例子
+  time_limit_sec: 180
+- id: gen-computer-network-010
+  course_id: computer-network
+  based_on_pattern_id: pattern-computer-network-001
+  source_materials:
+  - 计算机网络样题(5).pdf
+  question_type: short_answer
+  topic: IP routing and subnetting
+  difficulty: medium
+  similarity: same_type
+  label: 变式题
+  prompt: 请简述 IP routing and subnetting 的定义和核心要点。
+  expected_answer: ''
+  scoring_points:
+  - 说明定义
+  - 说明要点
+  - 说明例子
+  time_limit_sec: 180
+- id: gen-computer-network-011
+  course_id: computer-network
+  based_on_pattern_id: pattern-computer-network-003
+  source_materials:
+  - 6-Transport(3).pptx
+  question_type: short_answer
+  topic: Error detection and MAC
+  difficulty: medium
+  similarity: same_type
+  label: 变式题
+  prompt: 请简述 Error detection and MAC 的定义和核心要点。
+  expected_answer: ''
+  scoring_points:
+  - 说明定义
+  - 说明要点
+  - 说明例子
+  time_limit_sec: 180

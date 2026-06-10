@@ -1,0 +1,43 @@
+schema_version: 1
+analysis:
+  id: exam-analysis-computer-network-001
+  course_id: computer-network
+  generated_at: '2026-06-10'
+  goal: pass
+  source_files:
+  - 期末复习重点.pdf
+  - 计算机网络样题(5).pdf
+  summary: Network 和 Transport 题型优先级较高，建议先做 简答 题
+  priorities:
+  - topic: IP routing and subnetting
+    chapter: Network
+    weight: 4
+    question_types:
+    - short_answer
+    evidence:
+    - source_file: 计算机网络样题(5).pdf
+      reason: found in mock_exam file, chapter keyword matched in filename
+    recommended_action: 练习子网划分与路由选择步骤
+  - topic: TCP congestion control
+    chapter: Transport
+    weight: 2
+    question_types:
+    - short_answer
+    evidence:
+    - source_file: 6-Transport(3).pptx
+      reason: 'found in slides file, chapter keyword matched in filename; slides fallback
+        (confidence: low)'
+    recommended_action: 闭卷回忆 TCP 拥塞控制四个阶段
+  - topic: Error detection and MAC
+    chapter: Data Link
+    weight: 2
+    question_types:
+    - short_answer
+    evidence:
+    - source_file: 6-Transport(3).pptx
+      reason: 'found in slides file, chapter keyword matched in filename; default
+        chapter supplement (confidence: low)'
+    recommended_action: 闭卷回忆帧结构与差错校验流程
+  plan_refs:
+  - plan.md
+  confidence: medium

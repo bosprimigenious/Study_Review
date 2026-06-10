@@ -1,0 +1,44 @@
+schema_version: 1
+patterns:
+- id: pattern-computer-network-001
+  course_id: computer-network
+  source_file: 计算机网络样题(5).pdf
+  year: null
+  question_type: short_answer
+  topic: IP routing and subnetting
+  chapter: Network
+  difficulty: medium
+  answer_shape: 定义 → 要点 → 例子
+  scoring_points:
+  - 说明定义
+  - 说明要点
+  - 说明例子
+  reusable_template: 简答题按定义、要点、例子组织答案。
+- id: pattern-computer-network-002
+  course_id: computer-network
+  source_file: 6-Transport(3).pptx
+  year: null
+  question_type: short_answer
+  topic: TCP congestion control
+  chapter: Transport
+  difficulty: medium
+  answer_shape: 定义 → 要点 → 例子
+  scoring_points:
+  - 说明定义
+  - 说明要点
+  - 说明例子
+  reusable_template: 简答题按定义、要点、例子组织答案。
+- id: pattern-computer-network-003
+  course_id: computer-network
+  source_file: 6-Transport(3).pptx
+  year: null
+  question_type: short_answer
+  topic: Error detection and MAC
+  chapter: Data Link
+  difficulty: medium
+  answer_shape: 定义 → 要点 → 例子
+  scoring_points:
+  - 说明定义
+  - 说明要点
+  - 说明例子
+  reusable_template: 简答题按定义、要点、例子组织答案。
