@@ -65,6 +65,22 @@ study-review-skill/
 └── agents/openai.yaml
 ```
 
+## Documentation Map
+
+- `SKILL.md`: distilled runtime instructions for Codex as the study-review orchestrator.
+- `DESIGN.md`: high-level design principles.
+- `PLAN.md`: implementation roadmap and phase order.
+- `FULLSTACK_AGENT_ARCHITECTURE.md`: React + TypeScript + Python architecture.
+- `RESEARCH_REPORT.md`: background research and external comparisons.
+- `references/orchestrator.md`: single-agent orchestration, state machine, intent routing, and tool contracts.
+- `references/product_mvp.md`: MVP scope, paid-entry candidates, and note-generation strategy.
+- `references/past_exam_analysis.md`: past-exam analysis workflow and data model.
+- `references/source_policy.md`: mandatory local-source policy.
+- `references/modes.md`: detailed review modes.
+- `references/subject_profiles.md`: subject-specific strategies.
+- `references/card_quality.md`: flashcard and question quality rules.
+- `references/artifacts.md`: review artifact formats.
+
 ## Current Focus
 
 The first version focuses on this loop:

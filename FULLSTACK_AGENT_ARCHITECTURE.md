@@ -399,6 +399,8 @@ study_review.db
 
 ## Agent 层
 
+Agent 层的详细规范放在 `references/orchestrator.md`。本节只保留全栈架构视角：后端如何调用总控 agent，以及何时升级框架。
+
 ### Source Policy
 
 所有后续 agent 实现都必须继承 `references/source_policy.md`：
@@ -424,6 +426,7 @@ If the answer is not supported by workspace files, say the workspace materials a
 方式：
 
 - 后端读 `SKILL.md` 和必要 reference。
+- 对总控行为读取 `references/orchestrator.md`。
 - 把当前课程、进度、错题、用户请求组合成 prompt。
 - 调用模型生成问题、判分、解释、追问。
 - 用 Python 脚本保存结果。
@@ -715,7 +718,7 @@ SQLite
 
 顺序：
 
-1. 补 `references/product_mvp.md`。
+1. 保持 `SKILL.md` 精简，只做总控入口和行为规则。
 2. 补 `references/question_patterns.md`。
 3. 补 `references/data_formats.md`。
 4. 补 `examples/sample_progress.md` 和 `examples/sample_cards.yaml`。
