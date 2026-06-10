@@ -5,12 +5,10 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import signal
 import subprocess
 import sys
 from dataclasses import dataclass
-from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -23,44 +21,13 @@ if hasattr(sys.stdout, "reconfigure"):
 if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
+from agent.grading import grade_answer as llm_grade  # noqa: E402
 from review_io import (  # noqa: E402
     get_review_dir,
     load_cards,
     load_files_yaml,
     load_generated_questions,
     update_progress_next_action,
-)
-
-STOPWORDS = frozenset(
-    {
-        "的",
-        "是",
-        "在",
-        "和",
-        "了",
-        "一个",
-        "这个",
-        "那个",
-        "可以",
-        "使用",
-        "进行",
-        "通过",
-        "以及",
-        "或者",
-        "其中",
-        "什么",
-        "哪个",
-        "怎么",
-        "为什么",
-        "因为",
-        "所以",
-        "如果",
-        "虽然",
-        "但是",
-        "然而",
-        "因此",
-        "说明",
-    }
 )
 
 VERDICT_LABELS = {
@@ -103,59 +70,34 @@ def _resolve_subject(review_dir: Path, course_path: Path) -> str:
     return course_name
 
 
-def extract_keywords(text: str) -> list[str]:
-    normalized = re.sub(r"^说明", "", text.strip())
-    tokens = re.findall(r"[\u4e00-\u9fff]{2,}|[a-zA-Z]{2,}", normalized)
-    keywords: list[str] = []
-    for token in tokens:
-        lowered = token.lower()
-        if token in STOPWORDS or lowered in STOPWORDS:
-            continue
-        if token not in keywords:
-            keywords.append(token)
-    return keywords
-
-
 def grade_answer(
     user_answer: str,
     scoring_points: list[str],
     expected_answer: str,
+    *,
+    prompt: str = "",
 ) -> dict[str, Any]:
-    covered: list[str] = []
-    omissions: list[str] = []
-    effective_points = scoring_points or (
-        [part.strip() for part in re.split(r"[;；]", expected_answer) if part.strip()]
-        if expected_answer
-        else ["核心要点"]
+    """Grade via agent.grading (LLM with keyword fallback)."""
+    result = llm_grade(prompt, expected_answer, scoring_points, user_answer)
+    covered = list(result.get("covered_points") or [])
+    omissions = list(result.get("omissions") or [])
+    effective_total = max(
+        len(scoring_points) or len(covered) + len(omissions),
+        1,
     )
-
-    answer_lower = user_answer.lower()
-    for point in effective_points:
-        keywords = extract_keywords(point)
-        if not keywords:
-            keywords = [point]
-        matched = sum(1 for keyword in keywords if keyword.lower() in answer_lower)
-        threshold = max(1, len(keywords) * 0.5)
-        if matched >= threshold:
-            covered.append(point)
-        else:
-            omissions.append(point)
-
-    total = max(len(effective_points), 1)
-    pct = len(covered) / total * 100
-    if pct >= 80:
-        verdict = "correct"
-    elif pct >= 40:
-        verdict = "partial"
-    else:
-        verdict = "wrong"
-
+    coverage_pct = len(covered) / effective_total * 100
     return {
-        "verdict": verdict,
-        "score_hint": f"{len(covered)}/{len(effective_points)} scoring points covered",
+        "verdict": str(result.get("verdict") or "wrong"),
+        "score_hint": str(
+            result.get("score_hint")
+            or f"{len(covered)}/{effective_total} scoring points covered"
+        ),
         "covered_points": covered,
         "omissions": omissions,
-        "coverage_pct": pct,
+        "coverage_pct": coverage_pct,
+        "better_answer": result.get("better_answer"),
+        "follow_up_question": result.get("follow_up_question"),
+        "fallback": bool(result.get("fallback")),
     }
 
 
@@ -351,12 +293,15 @@ def _print_feedback(question: Question, grade: dict[str, Any]) -> str | None:
         for omission in grade["omissions"]:
             print(f"  - {omission}")
 
-    stable = _stable_answer(question)
+    stable = grade.get("better_answer") or _stable_answer(question)
     print("更稳的答法：")
     print(f"  {stable}")
 
     if grade["omissions"]:
-        follow_up = _follow_up_question(grade["omissions"][0], question.topic)
+        follow_up = grade.get("follow_up_question") or _follow_up_question(
+            grade["omissions"][0],
+            question.topic,
+        )
         print(f"追问：\n  {follow_up}")
     return follow_up
 
@@ -418,6 +363,7 @@ def run_session(
             user_answer,
             question.scoring_points,
             question.expected_answer,
+            prompt=question.prompt,
         )
         _print_feedback(question, grade)
         print("─" * 35)
