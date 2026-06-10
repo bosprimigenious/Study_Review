@@ -1,109 +1,48 @@
 # Study Review Skill
 
-`study-review` is a Codex skill for exam review from local course materials. It is designed to ask active-recall questions, grade answers, record mistakes, and schedule later review.
+CLI 本地课程复习工具：主动回忆 + 错题复查，基于本地课件与试卷 metadata 生成计划与变式题。
 
-It is also being extended toward a full exam-prep workflow:
+## 依赖
 
-```text
-upload review materials / past exams
-  -> analyze question types and key topics
-  -> match topics to local course materials
-  -> generate variant practice questions
-  -> build a concrete review plan
+- Python 3.10+
+- PyYAML
+
+## 安装
+
+```bash
+git clone <repo-url>
+cd study-review-skill
+pip install pyyaml
 ```
 
-## Source Policy
-
-By default, this skill only uses files under:
-
-```text
-/Users/bosprimigenious/Important_FIles/2025-2026下
-```
-
-It does not use web search, GitHub, external websites, repository-external files, or model memory as factual evidence unless the user explicitly allows it.
-
-If a factual answer cannot be supported by local workspace files, the expected answer is:
-
-```text
-仓库内资料不足，无法判断。
-```
-
-See `references/source_policy.md` for the full policy.
-
-## Product MVP
-
-See `references/product_mvp.md` for the product-facing feature map. It marks first-version features, paid-entry candidates, later features, and risky features such as long-form note generation.
-
-## How To Use
-
-Example prompts:
-
-```text
-开始复习计算机网络，先摸底
-```
-
-```text
-毛概抽背我，先来 5 题
-```
-
-```text
-今天该复习什么
-```
-
-```text
-根据这份试卷和复习资料分析重点，并出 10 道变式题
-```
-
-## Repository Layout
-
-```text
-study-review-skill/
-├── SKILL.md
-├── references/
-├── scripts/
-├── examples/
-└── agents/openai.yaml
-```
-
-## Documentation Map
-
-- `SKILL.md`: distilled runtime instructions for Codex as the study-review orchestrator.
-- `DESIGN.md`: high-level design principles.
-- `PLAN.md`: implementation roadmap and phase order.
-- `FULLSTACK_AGENT_ARCHITECTURE.md`: React + TypeScript + Python architecture.
-- `RESEARCH_REPORT.md`: background research and external comparisons.
-- `references/orchestrator.md`: single-agent orchestration, state machine, intent routing, and tool contracts.
-- `references/student_needs_research.md`: student demand research for exam-week workflows.
-- `references/product_mvp.md`: MVP scope, paid-entry candidates, and note-generation strategy.
-- `references/past_exam_analysis.md`: past-exam analysis workflow and data model.
-- `references/question_patterns.md`: reusable question templates.
-- `references/data_formats.md`: stable review data contracts and examples.
-- `references/source_policy.md`: mandatory local-source policy.
-- `references/modes.md`: detailed review modes.
-- `references/subject_profiles.md`: subject-specific strategies.
-- `references/card_quality.md`: flashcard and question quality rules.
-- `references/artifacts.md`: review artifact formats.
-
-## Current Focus
-
-The first version focuses on this loop:
-
-```text
-scan materials -> ask questions -> grade answers -> record mistakes -> schedule review
-```
-
-The next product-facing loop is:
-
-```text
-upload exams/materials -> find priorities -> generate variants -> plan review -> drill weak points
-```
-
-More advanced features such as Anki export, FSRS scheduling, full PPT/PDF extraction, or a polished React interface should come after these review and exam-analysis loops work reliably.
-
-## First CLI Step
-
-Initialize a course review workspace:
+## 完整 CLI 示例（6 步命令链）
 
 ```bash
 python scripts/init_course_review.py "../计算机网络"
+python scripts/analyze_exam.py "../计算机网络" --force
+python scripts/generate_questions.py "../计算机网络" --count 5 --force
+python scripts/plan_review.py "../计算机网络" --minutes 90 --goal pass --force
+python scripts/review_session.py "../计算机网络" --source generated --limit 5
+python scripts/due_today.py ..
 ```
+
+## 当前限制
+
+- 不解析 PDF/PPTX 内容，基于文件名和 `files.yaml` metadata 推断考点
+- 规则判分（关键词子串匹配），准确率目标 ≥70%，MVP 不接 LLM
+- 仅支持本地课程资料，不联网
+- 交互模式在 Windows `cmd.exe` 下体验可能不佳，推荐 Windows Terminal
+
+## 开发状态
+
+**v0.2 MVP CLI 闭环已成立**：55/55 任务完成，单元测试 16 条全绿，E2E 6 步命令链已验收。
+
+## 文档
+
+- [tasks.md](tasks.md) — 任务清单与验收指标
+- [PLAN.md](PLAN.md) — 实现路线图
+- [DESIGN.md](DESIGN.md) — 设计原则
+
+## License
+
+MIT
