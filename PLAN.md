@@ -62,6 +62,117 @@ study-review-skill/
 - 错题记录和到期复习还没有形成闭环。
 - 没有用真实科目跑过端到端验证。
 
+## 版本路线图
+
+### v0.1：文档和契约地基 `基本完成`
+
+目标：让项目方向、智能体行为、数据格式、问题模板稳定下来。
+
+产物：
+
+- `SKILL.md` 总控入口。
+- `references/orchestrator.md`。
+- `references/student_needs_research.md`。
+- `references/product_mvp.md`。
+- `references/past_exam_analysis.md`。
+- `references/question_patterns.md`。
+- `references/data_formats.md`。
+- `examples/*.yaml` / `examples/*.md`。
+
+完成标准：
+
+- agent 知道什么时候救火规划、什么时候分析往年题、什么时候一题一答。
+- 数据文件有稳定字段，不再边写脚本边猜格式。
+- 文档中不再把已完成项当作待办。
+
+### v0.2：CLI 最小闭环 `当前目标`
+
+目标：不用前端，先让一门真实课程跑通。
+
+链路：
+
+```text
+inventory
+  -> init_course_review
+  -> analyze_exam
+  -> generate_questions
+  -> plan_review
+  -> review_log
+  -> due_today
+```
+
+完成标准：
+
+- `计算机网络/review/` 可生成并重复运行安全。
+- 能从样题/课件生成非空 `exam-analysis.yaml`。
+- 能生成 5 道变式题。
+- 能生成 90 分钟保底计划。
+- 能记录 1 条错题并在 due 查询中出现。
+
+### v0.3：Agent 编排闭环
+
+目标：把 CLI 能力接到 `StudyReviewOrchestrator` 的意图路由里。
+
+完成标准：
+
+- 用户说“今晚怎么不挂”，agent 能选择计划流程。
+- 用户说“按往年题出题”，agent 能选择试卷分析和出题流程。
+- 用户回答题目后，agent 能判分、记录错题、安排复查。
+- agent 不假装未实现工具已经运行。
+
+### v0.4：FastAPI 后端
+
+目标：把 CLI 能力封装成 API，为前端做准备。
+
+核心接口：
+
+```text
+GET  /courses
+POST /courses/{course}/init-review
+GET  /courses/{course}/materials
+POST /courses/{course}/exam-analysis
+POST /courses/{course}/questions
+POST /courses/{course}/plan
+POST /mistakes
+GET  /due-today
+```
+
+完成标准：
+
+- API 返回结构和 `references/data_formats.md` 一致。
+- 后端不直接编造课程内容，只调工具/agent。
+- 每个接口有最小测试或样例请求。
+
+### v0.5：React 前端 MVP
+
+目标：做工具型界面，不做精美 dashboard。
+
+页面：
+
+- 课程页
+- 上传/登记资料页
+- 试卷分析页
+- 今晚计划页
+- 一题一答练习页
+- 错题复查页
+
+完成标准：
+
+- 用户能从“上传资料”一路走到“开始 5 题摸底”。
+- `分析往年题` 是明确主按钮。
+- 计划页必须有“现在开始”动作。
+
+### v1.0：可用期末复习产品
+
+目标：面向真实期末周使用。
+
+完成标准：
+
+- 至少 3 门课真实跑通。
+- 每门课至少完成一次：资料登记、试卷分析、变式题、计划、错题复查。
+- 输出内容可追溯到本地资料。
+- 用户不需要理解仓库结构也能完成复习流程。
+
 ## 需求到功能映射
 
 调研后，功能必须围绕期末周高压场景排序。
@@ -82,6 +193,66 @@ study-review-skill/
 ```text
 资料 -> 重点 -> 题 -> 计划 -> 答题 -> 错题 -> 复查
 ```
+
+## 功能模块边界
+
+### 总控 Agent
+
+负责：
+
+- 理解用户目标。
+- 判断课程状态。
+- 选择下一步工具。
+- 保持 source policy。
+- 把工具结果变成行动。
+
+不负责：
+
+- 直接解析所有文件。
+- 自己维护数据库。
+- 凭空补课程知识。
+- 替代确定性脚本。
+
+### CLI Scripts
+
+负责：
+
+- 初始化目录。
+- 读取/写入 YAML 和 Markdown。
+- 查找 due 项。
+- 生成确定性框架结果。
+
+不负责：
+
+- 做复杂教学判断。
+- 长篇解释课程内容。
+- 绕过 source policy。
+
+### Future API
+
+负责：
+
+- 将脚本能力暴露给前端。
+- 做输入校验。
+- 返回结构化结果。
+
+不负责：
+
+- 把业务规则藏在前端。
+- 直接写不符合数据契约的临时格式。
+
+### Future Frontend
+
+负责：
+
+- 让上传、分析、计划、练习变得低摩擦。
+- 展示来源、计划、题目、错题。
+
+不负责：
+
+- 判断课程事实。
+- 生成题目。
+- 管理复习调度算法。
 
 ## 功能优先级
 
@@ -563,6 +734,12 @@ scripts/plan_review.py
 - 原始课件目录不被移动、不被覆盖。
 - 重复运行 `init_course_review.py` 时全部跳过已有文件。
 
+提交建议：
+
+```text
+test: initialize real computer network review workspace
+```
+
 ### Sprint B：试卷分析脚本雏形
 
 新增：
@@ -584,6 +761,21 @@ scripts/analyze_exam.py
 - 对 `计算机网络/review/files.yaml` 能生成非空 `exam-analysis.yaml`。
 - 分析结果明确标注 evidence。
 - 低置信度时不装作精准分析。
+
+输出示例：
+
+```text
+高频来源：样题、往年题、作业答案
+优先章节：Transport / Network
+建议动作：先做协议流程题，再做计算题
+置信度：low / medium / high
+```
+
+提交建议：
+
+```text
+feat: add initial exam analysis script
+```
 
 ### Sprint C：变式题生成雏形
 
@@ -607,6 +799,12 @@ scripts/generate_questions.py
 - 每题能追溯到 pattern 或 priority。
 - 题目格式能被后续 review session 使用。
 
+提交建议：
+
+```text
+feat: generate practice variants from exam analysis
+```
+
 ### Sprint D：今晚计划脚本
 
 新增：
@@ -627,6 +825,24 @@ scripts/plan_review.py
 - 对 `计算机网络` 能生成 90 分钟保底计划。
 - 计划引用本地资料或分析结果。
 - 计划不是泛泛建议，而是可执行任务列表。
+
+输出结构：
+
+```text
+目标：
+依据：
+先做：
+后做：
+可以先放弃：
+最后 15 分钟：
+现在开始：
+```
+
+提交建议：
+
+```text
+feat: add emergency review planning script
+```
 
 ### Sprint E：错题闭环升级
 
@@ -649,6 +865,97 @@ scripts/due_today.py
 - 记录 1 条错题后，当天或次日能被 `due_today.py` 查到。
 - 坏 YAML 不导致整个扫描崩溃。
 
+提交建议：
+
+```text
+feat: connect mistake log to due review cards
+```
+
+## 质量指标
+
+第一版不用复杂埋点，但每次端到端验证要人工记录这些指标：
+
+- `time_to_first_question`: 从用户说开始复习到第一题出现的时间。
+- `source_coverage`: 计划/题目引用了多少个本地资料。
+- `actionability`: 输出是否包含明确“现在开始”。
+- `question_quality`: 题目是否有标准答案和评分点。
+- `review_recovery`: 关闭会话后能否从 `progress.md` 恢复。
+- `due_recall`: 错题是否能在预定日期被查回。
+
+验收阈值：
+
+- 90 秒内能给出第一轮行动或明确缺什么资料。
+- 每道生成题至少有 1 个来源依据或 pattern 依据。
+- 每个计划必须包含第一步。
+- 每条错题必须有 due。
+
+## 风险和应对
+
+### 风险 1：又变成总结器
+
+表现：
+
+- 输出很长。
+- 没有问题。
+- 没有评分点。
+
+应对：
+
+- `SKILL.md` 已规定 active recall before explanation。
+- `question_patterns.md` 必须被出题脚本使用。
+- 计划输出必须以“现在开始”结尾。
+
+### 风险 2：试卷分析像押题
+
+表现：
+
+- 说“今年一定考”。
+- 生成题像原题复刻。
+
+应对：
+
+- 只说高频、优先级、变式。
+- 标记 `模拟题` / `变式题`。
+- 每条建议都标 evidence 和 confidence。
+
+### 风险 3：文件解析陷入泥潭
+
+表现：
+
+- 花大量时间处理 PPT/PDF 文本抽取。
+- CLI 迟迟跑不通。
+
+应对：
+
+- 第一版先用文件名、文件类型、人工可见资料和轻量文本。
+- 先让 YAML/Markdown 闭环跑起来。
+- 精细解析放到 P2。
+
+### 风险 4：前端太早
+
+表现：
+
+- 页面很好看，但没有真实数据。
+- 数据格式频繁变。
+
+应对：
+
+- v0.2 先做 CLI。
+- v0.4 再做 API。
+- v0.5 才做 React。
+
+### 风险 5：错题没有复查
+
+表现：
+
+- 错题只写日志，不进入 due。
+
+应对：
+
+- `review_log.py` 必须同步写 `cards.yaml`。
+- `due_today.py` 必须扫描所有课程 review。
+- 完成定义里保留 due 验收。
+
 ## 开发顺序原则
 
 1. 先 CLI，后 API，最后前端。
@@ -656,3 +963,15 @@ scripts/due_today.py
 3. 先跑通一门课，后抽象成多课程。
 4. 先保底计划和变式题，后完整笔记。
 5. 每个脚本都必须重复运行安全，不覆盖用户资料。
+
+## 不变量
+
+无论后续怎么改，以下规则不能变：
+
+1. 课程事实只来自本地资料，除非用户明确解除限制。
+2. 先问问题，再讲解。
+3. 往年题用于分析题型和生成变式，不用于押题承诺。
+4. 计划必须落到行动。
+5. 错题必须能复查。
+6. `SKILL.md` 保持短，细节放 `references/`。
+7. 脚本必须重复运行安全。
