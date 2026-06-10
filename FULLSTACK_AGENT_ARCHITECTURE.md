@@ -707,20 +707,32 @@ FastAPI
 
 ## 技术栈建议
 
+详细选型见 `references/tech_stack.md`。本节保留摘要。
+
 ### 前端
 
 ```text
 React
 TypeScript
-Vite 或 Next.js
+Vite
+Tailwind CSS
+shadcn/ui
+Radix UI
+lucide-react
 TanStack Query
+Zustand
+React Hook Form
 Zod
+react-dropzone
+react-pdf
+recharts
 ```
 
 选择：
 
-- 纯本地工具：Vite 更轻。
-- 想做完整 Web 产品：Next.js 更顺。
+- MVP 先用 Vite，更轻、更快。
+- `shadcn/ui + Tailwind + Radix` 负责现代工作台质感。
+- `TanStack Query` 管服务端状态，`Zustand` 只放少量 UI 状态。
 
 ### 后端
 
@@ -729,16 +741,29 @@ Python
 FastAPI
 Pydantic
 PyYAML
+SQLite
 pytest
 ```
 
 ### Agent
 
 ```text
-OpenAI Agents SDK 或 LangGraph
+Python-first single orchestrator
+OpenAI Agents SDK 或 LangGraph later
 ```
 
 暂时不选定，等 CLI 和 API 稳定后再判断。
+
+### PDF / OCR
+
+```text
+PyMuPDF
+pdfplumber
+python-pptx
+macOS Vision OCR / Swift scripts
+```
+
+图片 PDF 和扫描版真题处理流程见 `references/pdf_ocr_workflow.md`。
 
 ### 存储
 

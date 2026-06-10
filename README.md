@@ -42,6 +42,8 @@ python scripts/due_today.py ..
 - [tasks.md](tasks.md) — 任务清单与验收指标
 - [PLAN.md](PLAN.md) — 实现路线图
 - [DESIGN.md](DESIGN.md) — 设计原则
+- [references/tech_stack.md](references/tech_stack.md) — 前端、后端、状态管理、PDF/OCR 与智能体技术选型
+- [scripts/ocr/README.md](scripts/ocr/README.md) — 本地 PDF 渲染、文本抽取与 macOS Vision OCR 脚本说明
 
 ## License
 

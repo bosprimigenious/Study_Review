@@ -238,7 +238,7 @@ Later:
 - paid unlocks `[LATER]`
 - material sharing `[LATER]`
 - Anki export `[LATER]`
-- precise PDF/PPT extraction `[LATER]`
+- precise PDF/PPT extraction `[LATER]`; local scanned-PDF OCR workflow is documented in `references/pdf_ocr_workflow.md`
 - school/course question banks `[LATER]`
 - mobile mini app `[LATER]`
 

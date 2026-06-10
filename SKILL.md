@@ -56,7 +56,9 @@ Load only the references needed for the current task:
 - `references/orchestrator.md`: agent role, state machine, intent routing, tool contracts, and failure handling.
 - `references/student_needs_research.md`: student demand research and product implications.
 - `references/product_mvp.md`: MVP features, paid-entry candidates, notes strategy, and product guardrails.
+- `references/tech_stack.md`: recommended frontend/backend libraries, PDF/OCR tooling, state management, and UI direction.
 - `references/past_exam_analysis.md`: past-exam workflow, data model, frontend/backend requirements, and safety rules.
+- `references/pdf_ocr_workflow.md`: local PDF/image OCR workflow for scanned exams, output folders, formula caveats, and source tracing.
 - `references/question_patterns.md`: reusable templates for diagnostic, recall, contrast, calculation, proof, and past-exam variant questions.
 - `references/data_formats.md`: stable file contracts for review directories, cards, progress, exam analysis, and generated questions.
 - `references/modes.md`: detailed review modes and response shapes.
