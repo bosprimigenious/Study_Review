@@ -14,6 +14,22 @@ The consistent pattern across publicly visible exam-week posts, university study
 焦虑、来不及、资料很多、求重点、求不挂科、求速成、求有人带着做。
 ```
 
+The key product insight:
+
+```text
+小红书式大学生期末需求，不是“我要一个学习系统”，而是“我快来不及了，你告诉我现在怎么不挂科”。
+```
+
+So the product should not lead with learning theory, dashboards, or full-note generation. It should lead with rescue actions:
+
+```text
+先看什么
+哪些能放弃
+哪些题型最容易拿分
+现在开始做哪 5 题
+错题明天怎么回抽
+```
+
 ## Sources Consulted
 
 - 中国大学生在线期末复习建议: emphasizes reviewing homework and PPT first, then teacher-marked scope, prioritizing major courses and high-GPA courses, and managing anxiety.
@@ -39,12 +55,14 @@ Required function:
 - 3-day plan
 - 7-day plan
 - priority by exam date, credit/GPA value, weakness, and available materials
+- first concrete task after the plan
 
 Agent behavior:
 
 - do not start with a long summary
 - produce a short plan
 - immediately start the first task
+- if the user says "不挂科", optimize for basic scoring points and high-frequency question types
 
 ### 2. 按资料找重点
 
@@ -66,6 +84,8 @@ Required function:
 - rank materials by exam usefulness
 - answer "先看什么"
 - answer "这个知识点在哪个资料里"
+- answer "哪些可以先放弃"
+- answer "最后 15 分钟看什么"
 
 Priority:
 
@@ -205,6 +225,7 @@ Chinese university finals
 - generated variants
 - mistake logging
 - due review
+- first-task handoff after every plan
 
 ### P1
 
@@ -213,6 +234,7 @@ Chinese university finals
 - mistake review notes
 - export to PDF / Word
 - simple frontend
+- "last 15 minutes" checklist
 
 ### P2
 
@@ -234,3 +256,17 @@ The next engineering work should not be another broad strategy document. It shou
 5. `scripts/init_course_review.py`
 
 Then validate on one real subject folder.
+
+## Feature Acceptance From Student Needs
+
+The product is not acceptable until it can answer these exam-week prompts:
+
+```text
+我今晚只有 90 分钟，计网怎么不挂？
+这几份往年题高频考什么？
+按这套样题风格出 5 道变式题。
+我刚才这题哪里丢分？
+明天应该回抽哪些错题？
+```
+
+The answer must end in an action, not just advice.

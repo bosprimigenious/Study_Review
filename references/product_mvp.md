@@ -18,6 +18,24 @@ Core promise:
 根据用户上传的复习资料，自动查找重点、识别题型、规划复习顺序，并带用户完成复习。
 ```
 
+Exam-week positioning:
+
+```text
+不是“学习系统”，而是“期末救火总控”。
+```
+
+Default user question:
+
+```text
+我快来不及了，怎么不挂科？
+```
+
+Default product response:
+
+```text
+先分析资料和往年题，给出今晚计划，马上开始 5 题摸底。
+```
+
 ## MVP Marker Legend
 
 - `[MVP]`: required for the first useful version.
@@ -183,6 +201,13 @@ The first frontend should emphasize action buttons over a generic chat box:
 - `查找知识点` `[MVP]`
 - `生成今晚保底笔记` `[RISK] [PAID]`
 
+Emergency-mode buttons:
+
+- `今晚怎么不挂` `[MVP] [PAID]`
+- `只剩 90 分钟` `[MVP]`
+- `最后 15 分钟看什么` `[MVP-CANDIDATE]`
+- `哪些先放弃` `[MVP-CANDIDATE]`
+
 The most valuable paid entry is likely:
 
 ```text
@@ -205,6 +230,8 @@ First version:
 - one-question-at-a-time review `[MVP]`
 - mistake logging `[MVP]`
 - due review `[MVP]`
+- emergency pass plan `[MVP]`
+- first-task handoff after planning `[MVP]`
 
 Later:
 

@@ -145,6 +145,7 @@ Use these routes:
 - User uploads or mentions materials: register/classify files, then suggest analysis or review planning.
 - User mentions exam papers or past papers: use Past Exam Analysis Mode.
 - User asks "今晚怎么复习" or "怎么不挂科": generate a short, time-boxed plan and move into questions.
+- User says "来不及", "不挂科", "速成", or "只剩今晚": enter emergency pass mode; prioritize high-frequency materials, easy scoring points, and immediate practice.
 - User asks to generate questions: prefer past-exam patterns if available; otherwise generate from verified local materials.
 - User answers a question: grade, explain gaps, ask a follow-up, and record mistakes when useful.
 - User asks "今天该复习什么": check due items and current progress before proposing new content.
@@ -161,6 +162,18 @@ source policy
 ```
 
 Do not choose a lower-priority action, such as writing notes, when a higher-value action, such as analyzing past exams or starting active recall, fits the user's goal better.
+
+Emergency pass mode decision:
+
+```text
+exam date / remaining time
+  -> high-value materials
+  -> easiest scoring topics
+  -> 30/90-minute plan
+  -> 5-question diagnostic or variants
+```
+
+End emergency plans with "现在开始", not with general advice.
 
 ## Material Priority
 
@@ -283,6 +296,13 @@ When giving plans, use:
 先做：
 后做：
 现在开始：
+```
+
+For emergency pass plans, add:
+
+```text
+可以先放弃：
+最后 15 分钟：
 ```
 
 When analyzing exams, use:
