@@ -361,6 +361,14 @@ services/api/
 │   ├── question_generator.py
 │   ├── planner.py
 │   └── agent.py
+├── agent/
+│   ├── orchestrator.py
+│   ├── state.py
+│   ├── intents.py
+│   ├── tool_dispatcher.py
+│   ├── prompts.py
+│   ├── validators.py
+│   └── evals.py
 └── tests/
 ```
 
@@ -399,7 +407,7 @@ study_review.db
 
 ## Agent 层
 
-Agent 层的详细规范放在 `references/orchestrator.md`。本节只保留全栈架构视角：后端如何调用总控 agent，以及何时升级框架。
+Agent 层的运行契约放在 `references/orchestrator.md`，详细开发计划放在 `references/agent_development_plan.md`。本节只保留全栈架构视角：后端如何调用总控 agent，以及何时升级框架。
 
 ### Source Policy
 
@@ -436,6 +444,57 @@ If the answer is not supported by workspace files, say the workspace materials a
 - 简单。
 - 贴合当前仓库。
 - 容易调试。
+
+### Agent 后端模块职责
+
+第一版后端 agent 不应该只有一个巨大 `agent.py`。建议这样拆：
+
+```text
+agent/orchestrator.py
+  StudyReviewOrchestrator，总控入口。
+
+agent/state.py
+  读取课程状态快照：资料、计划、题目、错题、due。
+
+agent/intents.py
+  将用户请求分类为 init_course / analyze_exam / generate_questions / make_plan / start_review / grade_answer / due_review。
+
+agent/tool_dispatcher.py
+  调用 CLI 或 service，不让模型直接写状态文件。
+
+agent/prompts.py
+  组装 SKILL.md、source_policy、orchestrator、课程状态和任务引用。
+
+agent/validators.py
+  检查输出是否有 next_action、source_basis、artifact path、warnings。
+
+agent/evals.py
+  运行最小评测用例，防止路由和 source policy 回退。
+```
+
+这套拆分的目的不是过度工程化，而是防止智能体逻辑混在 API route 里。前端点击按钮时，后端 route 只负责接收请求和返回结果，真正的决策交给 orchestrator。
+
+### `POST /agent/run` 边界
+
+`POST /agent/run` 只处理无法被固定按钮覆盖的自然语言请求，例如：
+
+```text
+我今晚怎么不挂科？
+按这几套往年题出 5 道变式题。
+今天先复习什么？
+我这题答得对吗？
+```
+
+固定按钮仍然应该走固定 API：
+
+```text
+分析往年题 -> POST /courses/{course}/exam-analysis
+生成计划 -> POST /courses/{course}/plan
+开始练习 -> POST /review-session/start
+提交答案 -> POST /review-session/answer
+```
+
+这样做可以降低 agent 不确定性，也方便前端做 loading、错误提示和重试。
 
 ### 第二阶段：OpenAI Agents SDK
 
@@ -571,9 +630,11 @@ Agent 生成重点、变式题和计划
 
 - 完成 `PLAN.md` 中 P0。
 - 保持 `SKILL.md` 精简，并把产品、试卷分析、总控细节分别放在 `product_mvp.md`、`past_exam_analysis.md`、`orchestrator.md`。
+- 详细智能体开发计划放在 `agent_development_plan.md`。
 - 使用 `question_patterns.md` 和 `data_formats.md` 作为问题质量与数据契约。
 - 做 `init_course_review.py`。
-- 升级 `review_log.py` 和 `due_today.py`。
+- 做 `analyze_exam.py`、`generate_questions.py`、`plan_review.py`、`review_session.py`。
+- 升级 `review_log.py` 和 `due_today.py`，支持 agent/API 可读的 `--json` 输出。
 
 这是前置条件。
 
@@ -587,7 +648,14 @@ Agent 生成重点、变式题和计划
 完成定义：
 
 ```text
-inventory -> init review -> record mistake -> due today
+inventory
+  -> init review
+  -> analyze exam
+  -> generate questions
+  -> plan review
+  -> review session
+  -> record mistake
+  -> due today
 ```
 
 ### Phase 2：Python API

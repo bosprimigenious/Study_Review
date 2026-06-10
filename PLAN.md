@@ -44,6 +44,7 @@ study-review-skill/
 - skill 的行为方向清楚：主动回忆优先。
 - `SKILL.md` 已蒸馏成总控智能体入口，细节拆到 `references/`。
 - `references/orchestrator.md` 已定义单总控 agent、状态机、意图路由和工具契约。
+- `references/agent_development_plan.md` 已扩展智能体开发路线、状态快照、工具成熟度、API 形状和评测方案。
 - `references/student_needs_research.md` 已沉淀大学生期末需求和功能优先级。
 - `references/product_mvp.md` 已统一标记 MVP、付费入口、后续功能和笔记风险。
 - `references/past_exam_analysis.md` 已定义试卷/往年题分析模块。
@@ -106,6 +107,7 @@ MVP 可验收标准：
 
 - `SKILL.md` 总控入口。
 - `references/orchestrator.md`。
+- `references/agent_development_plan.md`。
 - `references/student_needs_research.md`。
 - `references/product_mvp.md`。
 - `references/past_exam_analysis.md`。
@@ -163,6 +165,12 @@ inventory
 3. **Structured outputs**：agent 返回固定 JSON/Markdown 结构，方便 API 和前端消费。
 4. **API-backed orchestrator**：FastAPI 提供 `POST /agent/run`，由后端统一路由到工具。
 5. **Optional framework**：只有当状态分支和异步任务明显复杂后，才考虑 OpenAI Agents SDK 或 LangGraph；MVP 阶段不先上多 agent。
+
+详细开发计划见：
+
+```text
+references/agent_development_plan.md
+```
 
 v0.3 的原则：
 

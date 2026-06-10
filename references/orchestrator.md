@@ -478,6 +478,8 @@ If a tool does not exist yet:
 
 ## Agent Development Plan
 
+Detailed engineering guidance lives in `references/agent_development_plan.md`. This section keeps the short version for runtime orientation.
+
 Build the agent layer in four steps.
 
 ### Phase 1: Skill-Guided Manual Orchestration
