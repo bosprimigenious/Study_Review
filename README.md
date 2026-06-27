@@ -57,10 +57,14 @@ npm run dev
 
 ## 文档
 
+- [docs/README.md](docs/README.md) — 文档体系总入口
+- [docs/UPDATE_AND_ITERATION_PLAN.md](docs/UPDATE_AND_ITERATION_PLAN.md) — 当前更新与迭代计划
+- [docs/DOCUMENTATION_SYSTEM.md](docs/DOCUMENTATION_SYSTEM.md) — 文档分层、维护规则和模板
 - [tasks.md](tasks.md) — 任务清单与验收指标
-- [PLAN.md](PLAN.md) — 实现路线图
+- [PLAN.md](PLAN.md) — 历史实现路线图
 - [DESIGN.md](DESIGN.md) — 设计原则
 - [references/tech_stack.md](references/tech_stack.md) — 前端、后端、状态管理、PDF/OCR 与智能体技术选型
+- [references/agent_framework_research.md](references/agent_framework_research.md) — 可复用复习智能体运行时、框架选型与模型 API 接入方向
 - [scripts/ocr/README.md](scripts/ocr/README.md) — 本地 PDF 渲染、文本抽取与 macOS Vision OCR 脚本说明
 
 ## License

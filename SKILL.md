@@ -57,6 +57,7 @@ Load only the references needed for the current task:
 - `references/student_needs_research.md`: student demand research and product implications.
 - `references/product_mvp.md`: MVP features, paid-entry candidates, notes strategy, and product guardrails.
 - `references/tech_stack.md`: recommended frontend/backend libraries, PDF/OCR tooling, state management, and UI direction.
+- `references/agent_framework_research.md`: reusable agent framework shortlist, recommended runtime path, role split, and model API configuration direction.
 - `references/past_exam_analysis.md`: past-exam workflow, data model, frontend/backend requirements, and safety rules.
 - `references/pdf_ocr_workflow.md`: local PDF/image OCR workflow for scanned exams, output folders, formula caveats, and source tracing.
 - `references/question_patterns.md`: reusable templates for diagnostic, recall, contrast, calculation, proof, and past-exam variant questions.
@@ -65,6 +66,7 @@ Load only the references needed for the current task:
 - `references/subject_profiles.md`: subject-specific strategies for 毛概, 概率论, 计算机网络, 计算机组成原理, 理论计算机基础.
 - `references/card_quality.md`: rules for flashcards and active-recall questions.
 - `references/artifacts.md`: formats for mistake logs, batch summaries, and simple spaced repetition.
+- `docs/README.md`: human-maintained documentation index for roadmap, architecture, development, operations, product, and documentation governance. Load only when the user asks about maintaining or evolving this skill repository.
 
 Use scripts when they fit the task:
 
@@ -72,6 +74,7 @@ Use scripts when they fit the task:
 - `scripts/init_course_review.py`: create a course `review/` workspace without overwriting existing files.
 - `scripts/review_log.py`: append a structured mistake entry.
 - `scripts/due_today.py`: list review items due today or earlier.
+- `scripts/ocr/*.swift`: optional macOS PDFKit/Vision helpers for local OCR and page rendering of scanned course PDFs.
 
 ## Activation Checklist
 

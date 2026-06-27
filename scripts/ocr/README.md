@@ -16,6 +16,9 @@ extract_probability_pdfs.swift
 render_pdf_pages.swift
   Render each PDF page to PNG images for manual formula verification.
 
+render_selected_exam_pages.swift
+  Render the curated probability/statistics exam set to JPEG images for batch source checking.
+
 ocr_pdf.swift
   Force OCR every page of one PDF and write text output.
 
@@ -47,6 +50,12 @@ Render one PDF for visual checking:
 
 ```bash
 swift scripts/ocr/render_pdf_pages.swift "input.pdf" "/tmp/pdf-pages" 2.0
+```
+
+Render the curated probability/statistics exam set:
+
+```bash
+swift scripts/ocr/render_selected_exam_pages.swift "../概率论与数理统计/02_期末试卷" "/tmp/prob-exam-pages" 2.0
 ```
 
 Force OCR one PDF:
